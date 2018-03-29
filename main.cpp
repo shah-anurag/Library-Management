@@ -1,5 +1,7 @@
 #include<iostream>
+#include<cstring>
 #include<vector>
+#include<algorithm>
 
 using namespace std;
 
@@ -57,7 +59,7 @@ class Resource
         string getId();
         string getDateOfPurchase();
         double getRackNumber();
-        int GetEdition();
+        string GetEdition();        //CORRECTION
         void change_status(bool status);
         void update_history(string UserId, string IssueDate, bool status, int days);
 };
@@ -68,14 +70,99 @@ class IssuedBy
     string IssueDate;
     int IssueFor;
 public:
+    IssuedBy(string Id, string IssueDate): Id(Id), IssueDate(IssueDate){}
     string getId();
     string getIssueDate();
     int getNumOfDays();
     void EditId();
-    string EditIssueDate();
+    void EditIssueDate(string);       //CORRECTION
+    void setDays(int);
 };
 
-class Book: private Resource
+bool Resource::getStatus()
+{
+    return status;
+}
+
+string Resource::getAuthor()
+{
+    return author;
+}
+
+string Resource::getTitle()
+{
+    return title;
+}
+string Resource::getId()
+{
+    return Id;
+}
+string Resource::getDateOfPurchase()
+{
+    return date_of_purchase;
+}
+double Resource::getRackNumber()
+{
+    return rack_num;
+}
+string Resource::GetEdition()
+{
+    return Edition;
+}
+void Resource::change_status(bool status)
+{
+    Resource::status = status;
+    return;
+}
+
+void Resource::update_history(string UserId, string IssueDate, bool status, int days)
+{
+    vector<IssuedBy*>::iterator it = history.begin();
+    while(it != history.end() && strcmp((*it)->getIssueDate().c_str(),UserId.c_str()) == 0)
+        it++;
+    if(it == history.end())
+    {
+        IssuedBy* issuedby = new IssuedBy(UserId, IssueDate);
+        history.push_back(issuedby);
+        Resource::change_status(true);
+        return;
+    }
+    (*it)->IssuedBy::EditIssueDate(IssueDate);
+    (*it)->IssuedBy::setDays(days);
+    Resource::change_status(status);
+}
+
+string IssuedBy::getId()
+{
+    return Id;
+}
+string IssuedBy::getIssueDate()
+{
+    return IssuedBy::IssueDate;
+}
+int IssuedBy::getNumOfDays()
+{
+    return IssuedBy::IssueFor;
+}
+void IssuedBy::EditId()
+{
+    string Id;
+    cout << "Enter your id: " << '\n';
+    cin >> Id;
+    IssuedBy::Id = Id;
+    return;
+}
+void IssuedBy::EditIssueDate(string date)
+{
+    IssuedBy::IssueDate = date;
+}
+void IssuedBy::setDays(int days)
+{
+    IssuedBy::IssueFor = days;
+    return;
+}
+
+class Book: public Resource
 {
     int SubjectCode;
     string name;
@@ -87,6 +174,125 @@ public:
     string getSubjectName();
     int getSubjectCode();
 };
+
+void Book::Update()
+{
+    char update;
+    cout << "Author: " << getAuthor() << endl;
+    cout << "Update? Enter y or n: ";
+    cin >> update;
+    if(update != 'y' || update != 'n')
+    {
+        cout << "Invalid input ";
+        return;
+    }
+    else
+    {
+        string author;
+        cout << "Enter the name of Author: ";
+        cin >> author;
+        Resource::author = author;
+    }
+    cout << "Title: " << getTitle() << endl;
+    cout << "Update? Enter y or n: ";
+    cin >> update;
+    if(update != 'y' || update != 'n')
+    {
+        cout << "Invalid input ";
+        return;
+    }
+    else
+    {
+        string title;
+        cout << "Enter the Title: ";
+        cin >> title;
+        Resource::title = title;
+    }
+    cout << "Edition: " << GetEdition() << endl;
+    cout << "Update? Enter y or n: ";
+    cin >> update;
+    if(update != 'y' || update != 'n')
+    {
+        cout << "Invalid input";
+        return;
+    }
+    else
+    {
+        string edition;
+        cout << "Enter the Edition: ";
+        cin >> edition;
+        Resource::Edition = edition;
+    }
+    cout << "Date of Purchase: " << getDateOfPurchase() << endl;
+    cout << "Update? Enter y or n: ";
+    cin >> update;
+    if(update != 'y' || update != 'n')
+    {
+        cout << "Invalid input ";
+        return;
+    }
+    else
+    {
+        string date;
+        cout << "Enter the date of purchase: ";
+        cin >> date;
+        Resource::date_of_purchase = date;
+    }
+    cout << "Rack number: " << getRackNumber() << endl;
+    cout << "Update? Enter y or n: ";
+    cin >> update;
+    if(update != 'y' || update != 'n')
+    {
+        cout << "Invalid input ";
+        return;
+    }
+    else
+    {
+        double rack;
+        cout << "Enter the rack number: ";
+        cin >> rack;
+        Resource::rack_num = rack;
+    }
+    cout << "Subject Code: " << SubjectCode << endl;
+    cout << "Update? Enter y or n: ";
+    cin >> update;
+    if(update != 'y' || update != 'n')
+    {
+        cout << "Invalid input ";
+        return;
+    }
+    else
+    {
+        int sub_code;
+        cout << "Enter the subject code: ";
+        cin >> sub_code;
+        Book::SubjectCode = sub_code;
+    }
+    cout << "Subject Name: " << Book::name;
+    cout << "Update? Enter y or n: ";
+    cin >> update;
+    if(update != 'y' || update != 'n')
+    {
+        cout << "Invalid input ";
+        return;
+    }
+    else
+    {
+        string name;
+        cout << "Enter the name of Book: ";
+        cin >> name;
+        Book::name = name;
+    }
+    cout << "\nUpdated!\n";
+    return;
+}
+void Book::AddSubject()
+{
+
+}
+void DeleteSubject(string subject);
+string getSubjectName();
+int getSubjectCode();
 
 class Journal: private Resource
 {
@@ -103,6 +309,152 @@ public:
     }
     void getTopic(); // CORRECTION
 };
+
+void Journal::Update()
+{
+    char update;
+    cout << "Author: " << getAuthor() << endl;
+    cout << "Update? Enter y or n: ";
+    cin >> update;
+    if(update != 'y' || update != 'n')
+    {
+        cout << "Invalid input ";
+        return;
+    }
+    else
+    {
+        string author;
+        cout << "Enter the name of Author: ";
+        cin >> author;
+        Resource::author = author;
+    }
+    cout << "Title: " << getTitle() << endl;
+    cout << "Update? Enter y or n: ";
+    cin >> update;
+    if(update != 'y' || update != 'n')
+    {
+        cout << "Invalid input ";
+        return;
+    }
+    else
+    {
+        string title;
+        cout << "Enter the Title: ";
+        cin >> title;
+        Resource::title = title;
+    }
+    cout << "Edition: " << GetEdition() << endl;
+    cout << "Update? Enter y or n: ";
+    cin >> update;
+    if(update != 'y' || update != 'n')
+    {
+        cout << "Invalid input";
+        return;
+    }
+    else
+    {
+        string edition;
+        cout << "Enter the Edition: ";
+        cin >> edition;
+        Resource::Edition = edition;
+    }
+    cout << "Date of Purchase: " << getDateOfPurchase() << endl;
+    cout << "Update? Enter y or n: ";
+    cin >> update;
+    if(update != 'y' || update != 'n')
+    {
+        cout << "Invalid input ";
+        return;
+    }
+    else
+    {
+        string date;
+        cout << "Enter the date of purchase: ";
+        cin >> date;
+        Resource::date_of_purchase = date;
+    }
+    cout << "Rack number: " << getRackNumber() << endl;
+    cout << "Update? Enter y or n: ";
+    cin >> update;
+    if(update != 'y' || update != 'n')
+    {
+        cout << "Invalid input ";
+        return;
+    }
+    else
+    {
+        double rack;
+        cout << "Enter the rack number: ";
+        cin >> rack;
+        Resource::rack_num = rack;
+    }
+    cout << "Publication date : " << PublicationDate << endl;
+    cout << "Update? Enter y or n: ";
+    cin >> update;
+    if(update != 'y' || update != 'n')
+    {
+        cout << "Invalid input ";
+        return;
+    }
+    else
+    {
+        string pub_date;
+        cout << "Enter the publication date: ";
+        cin >> pub_date;
+        Journal::PublicationDate = pub_date;
+    }
+    return;
+}
+
+void Journal::getTopic()
+{
+    cout << "Topics: ";
+    for(int i = 0; i < topic.size(); i++) cout << topic[i] << " , ";
+    cout << endl;
+    return;
+}
+void Journal::AddTopic(string topic)
+{
+    Journal::getTopic();
+    /*
+    cout << "Enter Topics you want to add:\n";
+    cout << "Enter y when you are done:)\n";
+    while(1)
+    {
+        string topic;
+        cout << "Enter topic: ";
+        cin >> topic;
+        if(topic == 'y')
+            break;
+        Journal::topic.push_back(topic);
+    }
+    */
+    vector<string>::iterator it = find(Journal::topic.begin(), Journal::topic.end(), topic);
+    if(it == Journal::topic.end())
+    {
+        Journal::topic.push_back(topic);
+    }
+    else
+    {
+        cout << topic << " Already Exists\n";
+    }
+    return;
+}
+
+void Journal::DeleteTopic(string topic)
+{
+    Journal::getTopic();
+    auto it = find(Journal::topic.begin(), Journal::topic.end(), topic);
+    if(it == Journal::topic.end())
+    {
+        cout << "Topic does not exist\n";
+    }
+    else
+    {
+        Journal::topic.erase(it);
+    }
+    return;
+}
 
 class Member
 {
