@@ -1,6 +1,33 @@
 #include<iostream>
 #include<string>
+#include<vector>
+#include<cmath>
+#include<ctime>
 using namespace std;
+
+class BookIssued{
+	//protected:
+		
+		string BookName;
+		string Author;
+		
+		string IssueDate;
+		string ReturnDate;
+		long Fine;
+		long FinePaid;
+		bool renew;
+	public:
+		bool Status;
+		string BookId;
+		void getDetails();
+		void setReturnDate(string Date);
+		int CalculateFine(){
+			return 1;
+		}
+		void AcceptFine(long fine);
+		bool isRenew();
+		void ChangeRenew();
+};
 
 class Member{
 	protected:
@@ -51,6 +78,7 @@ class User : public Member{
 		string Department;
 		int num_of_books_issued;
 		vector<BookIssued*> history;
+		vector<BookIssued*>::iterator it;
 	public:
 		void editDepartment(string dep){
 			Department = dep;
@@ -58,13 +86,15 @@ class User : public Member{
 		
 		void payfine()															//doubt
 		{
-			auto it = history.begin();
+			
+			/*auto*/ it = history.begin();
 			int sum = 0;
-			while(it != history.end() && !*it->CalculateFine())
+			while(it != history.end() && !(*it)->CalculateFine())
 			{
-				sum += *it->CalculateFine();
+				sum += (*it)->CalculateFine();
 				it++;
-				cout << *it->getDetails << " Fine = " << *it->CalculateFine() << "\n";
+				(*it)->getDetails(); 
+				cout << " Fine = " << (*it)->CalculateFine() << "\n";
 			}
 			cout << "Total fine = " << sum << endl;
 			cout << "Enter amount paid\n";
@@ -72,9 +102,10 @@ class User : public Member{
 			it--;
 			while(sum && it != history.begin()-1)
 			{
-				*it->AcceptFine(min(sum, *it->CalculateFine()));
-				sum -= min(sum, *it->CalculateFine());
-				cout << *it->getDetails << " Fine = " << *it->CalculateFine() << "\n";
+				(*it)->AcceptFine(min(sum, (*it)->CalculateFine()));
+				sum -= min(sum, (*it)->CalculateFine());
+				(*it)->getDetails();
+				cout << " Fine = " << (*it)->CalculateFine() << "\n";
 				it--;
 			}
 			if(sum > 0)
@@ -97,20 +128,22 @@ class User : public Member{
 		
 		void gethistory()														//doubt
 		{
-			auto it = history.begin();
+			vector<BookIssued*>::iterator it;
+			it = history.begin();
 			while(it != history.end()){
-				*it->getdetails();
+				(*it)->getDetails();
 				it++;
 			}
 		}
 		
 		void search_history(string Resid)											//doubt,change
 		{
-			auto it = history.begin();
+			vector<BookIssued*>::iterator it;
+			it = history.begin();
 			bool flag = 0;
 			while(it != history.end()){
-				if(*it->BookId == Resid){
-					*it->getdetails();
+				if((*it)->BookId == Resid){
+					(*it)->getDetails();
 					flag = 1;
 				}
 				it++;
@@ -128,13 +161,14 @@ class User : public Member{
 		
 		void change_history_status(string ResId, string Date)					//doubt
 		{
-			auto it = history.end();
-			while(*it->BookId != ResId){
+			vector<BookIssued*>::iterator it;
+			it = history.end();
+			while((*it)->BookId != ResId){
 				it--;
 			}
-			*it->Status = 0;													//note
-			*it->setReturnDate(Date);
-			*it->Fine += 														//include<ctime> ???
+			(*it)->Status = 0;													//note
+			(*it)->setReturnDate(Date);
+			//*it->Fine += 														//include<ctime> ???
 		}
 };
 
@@ -146,7 +180,7 @@ class Student : public User{
 			return MaxBookLimit;
 		}
 		
-		bool isEligible();											//doubt,change			//yaha student_id nahi aayegi?
+		bool isEligible()											//doubt,change			//yaha student_id nahi aayegi?
 		{
 			if(getBookLimit()-getbooksissued())
 				return 1;
@@ -172,7 +206,7 @@ class Non_Phd : public Student{
 };
 
 class Phd : public Student{
-		int maxJouranlLimit;
+		int maxJournalLimit;
 	
 	public:
 		int getMaxJournalLimit(){
@@ -180,11 +214,11 @@ class Phd : public Student{
 		}
 		
 		void inc_num_of_journals(int i){
-			maxJouranlLimit += i;
+			maxJournalLimit += i;
 		}
 		
 		void dec_nun_of_journals(int i){
-			maxJouranlLimit -= i;
+			maxJournalLimit -= i;
 		}
 };
 
@@ -242,3 +276,7 @@ class Staff : public Member{
 		
 		void UpdateHistory(string UserId, string ResId);						//doubt
 };
+
+int main(){
+	
+}
