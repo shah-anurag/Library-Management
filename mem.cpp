@@ -7,26 +7,54 @@ using namespace std;
 
 class BookIssued{
 	//protected:
-		
 		string BookName;
 		string Author;
-		
-		string IssueDate;
-		string ReturnDate;
-		long Fine;
 		long FinePaid;
 		bool renew;
 	public:
+		long Fine;
+		int ReturnDate[3];
+		int IssueDate[3];
 		bool Status;
 		string BookId;
-		void getDetails();
-		void setReturnDate(string Date);
-		int CalculateFine(){
-			return 1;
+		BookIssued(Resource* Res, int Date[3])
+		{
+			BookName = Res->getTitle();
+			Author = Res->getAuthor();
+			FinePaid = 0;
+			Fine = 0;
+			Status = true;
+			BookId = Res->getId();
+			renew = false;
+			for(int i = 0; i < 3; IssueDate[i] = Date[i], ReturnDate[i] = 0, i++); 			
 		}
-		void AcceptFine(long fine);
-		bool isRenew();
-		void ChangeRenew();
+		
+		void getDetails(){
+			cout<<BookId<<" "<<BookName<<" "<<Author;
+			cout<<" Issued: "<<IssueDate[0]<<"/"<<IssueDate[1]<<"/"<<IssueDate[2];
+			cout<<" Returned: "<<ReturnDate[0]<<"/"<<ReturnDate[1]<<"/"<<ReturnDate[2];
+			cout<<" Fine: "<<Fine<<" Fine Paid: "<<FinePaid<<endl;
+		}
+		
+		void setReturnDate(int Date[3]){
+			for(int i = 0; i < 3; ReturnDate[i] = Date[i], i++);
+		}
+		
+		int CalculateFine(){
+			return (Fine - FinePaid);
+		}
+		
+		void AcceptFine(int fine){
+			FinePaid += fine;
+		}
+		
+		bool isRenew(){
+			return renew;
+		}
+		
+		void ChangeRenew(){
+			renew = 1;
+		}
 };
 
 class Member{
@@ -153,13 +181,13 @@ class User : public Member{
 			}
 		}
 		
-		void update_history(string Resid)										//doubt, change
+		void update_history(string Resid, int Date[3])										//doubt, change
 		{
-			BookIssued* book;
-			history.push_back(book);																			//DOUBT
+			Resource* book = search_by_Id(Resid);
+			history.push_back(BookIssued(book, Date));																			//DOUBT
 		}
 		
-		void change_history_status(string ResId, string Date)					//doubt
+		void change_history_status(string ResId, int Date[3])					//doubt
 		{
 			vector<BookIssued*>::iterator it;
 			it = history.end();
@@ -168,7 +196,12 @@ class User : public Member{
 			}
 			(*it)->Status = 0;													//note
 			(*it)->setReturnDate(Date);
-			//*it->Fine += 														//include<ctime> ???
+			struct tm iss = {0, 0, 0, (*it)->IssueDate[0], (*it)->IssueDate[1] - 1, (*it)->IssueDate[0] - 1900};
+			struct tm ret = {0, 0, 0, (*it)->ReturnDate[0], (*it)->ReturnDate[1] - 1, (*it)->ReturnDate[0] - 1900};
+			time_t iss_t = mktime(&iss);
+			time_t ret_t = mktime(&ret);
+			double difference = difftime(ret_t, iss_t) / (60 * 60 * 24);
+			(*it)->Fine += (5*difference);														//include<ctime> ???
 		}
 };
 
