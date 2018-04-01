@@ -11,6 +11,8 @@
 
 using namespace std;
 
+bool first = 0;
+
 class Resource;
 class Member;
 class IssuedBy;
@@ -31,7 +33,9 @@ class Library
     vector<Member*> member;
 
 public:
-    Library(string name, long long PhoneNumber): name(name), PhoneNumber(PhoneNumber){}
+    Library(string name, long long PhoneNumber): name(name), PhoneNumber(PhoneNumber)
+    {
+    }
     string getLibraryName()
     {
         return name;
@@ -57,6 +61,10 @@ public:
     Phd* get_user_phd(string UserId);
     NonPhd* get_user_nonphd(string UserId);
     Faculty* get_user_faculty(string UserId);
+    NonPhd* Login_as_Non_Phd(string);
+    Phd* Login_as_Phd(string);
+    Staff* Login_as_Staff(string);
+    Faculty* Login_as_Faculty(string);
 };
 
 class Resource
@@ -1710,6 +1718,47 @@ Faculty* Library::get_user_faculty(string UserId)
     return nullptr;
 }
 
+NonPhd* Library::Login_as_Non_Phd(string Id)
+{
+    vector<NonPhd*>::iterator it = nphd.begin();
+    while(it != nphd.end())
+    {
+        if((*it)->getId() == Id)
+            return *it;
+    }
+    return nullptr;
+}
+Phd* Library::Login_as_Phd(string Id)
+{
+    vector<Phd*>::iterator it = phd.begin();
+    while(it != phd.end())
+    {
+        if((*it)->getId() == Id)
+            return *it;
+    }
+    return nullptr;
+}
+Staff* Library::Login_as_Staff(string Id)
+{
+    vector<Staff*>::iterator it = staff.begin();
+    while(it != staff.end())
+    {
+        if((*it)->getId() == Id)
+            return *it;
+    }
+    return nullptr;
+}
+Faculty* Library::Login_as_Faculty(string Id)
+{
+    vector<Faculty*>::iterator it = faculty.begin();
+    while(it != faculty.end())
+    {
+        if((*it)->getId() == Id)
+            return *it;
+    }
+    return nullptr;
+}
+
 bool Staff::IssueResource(string UserId, string ResourceId, Library &lib)
 {
     if(lib.VerifyMemberId(UserId) && lib.VerifyResource(ResourceId))
@@ -1887,8 +1936,6 @@ void Staff::edit_my_profile()
     }
     return;
 }
-
-
 
 int main()
 {
