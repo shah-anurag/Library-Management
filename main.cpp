@@ -33,9 +33,7 @@ class Library
     vector<Member*> member;
 
 public:
-    Library(string name, long long PhoneNumber): name(name), PhoneNumber(PhoneNumber)
-    {
-    }
+    Library(string name, long long PhoneNumber): name(name), PhoneNumber(PhoneNumber){}
     string getLibraryName()
     {
         return name;
@@ -528,7 +526,7 @@ protected:
     string emailId;
 public:
     Member(string name, string JoinDate, string Id, long long ph_num, string password, string address = "", string emailId = ""):
-        name(name), JoinDate(JoinDate), ph_num(ph_num), address(address), password(password), emailId(emailId){}
+        name(name), Id(Id), JoinDate(JoinDate), ph_num(ph_num), address(address), password(password), emailId(emailId){}
     virtual void view_my_profile() = 0;
     virtual void edit_my_profile() = 0;
     virtual int getJournalsIssued() = 0;
@@ -578,6 +576,41 @@ public:
     {
         ReturnDate = "";
     }
+    BookIssued(Resource* Res)
+    {
+        BookName = Res->getTitle();
+        Author = Res->getAuthor();
+        FinePaid = 0;
+        Fine = 0;
+        Status = true;
+        BookId = Res->getId();
+        renew = false;
+        while(1)
+        {
+            cin_check;
+            cout << "Enter today's date(dd/mm/yyyy): ";
+            cin >> IssueDate;
+            if(IssueDate.size() == 10 && IssueDate[2] == '/' && IssueDate[5] == '/')
+            {
+                int d30[] = {4,6,9,11};
+                int d31[] = {1,3,5,7,8,10,12};
+                if(((IssueDate[0]-'0')*10 + (IssueDate[1]-'0') <= 30) && find(d30, d30+4, ((IssueDate[3]-'0')*10 + (IssueDate[4]-'0'))))
+                {
+                    break;
+                }
+                if(((IssueDate[0]-'0')*10 + (IssueDate[1]-'0') <= 31) && find(d31, d31+7, ((IssueDate[3]-'0')*10 + (IssueDate[4]-'0'))))
+                {
+                    break;
+                }
+                if(((IssueDate[0]-'0')*10 + (IssueDate[1]-'0') <= 28) && IssueDate[3] == '0' && IssueDate[4] == '2')
+                {
+                    break;
+                }
+            }
+            cout << "Invalid input\nTry again\n";
+        }
+        ReturnDate = "";
+    }
     void getDetails();
     string getId(){return BookId;}
     void setReturnDate(string UserId, string Date);             //CORRECTION
@@ -585,8 +618,15 @@ public:
     void AcceptFine(long long fine);
     bool isRenew();
     void ChangeRenew();
+    bool getStatus(){return Status;}
+    void setStatus(bool);
 };
 
+void BookIssued::setStatus(bool status)
+{
+    Status = status;
+    return;
+}
 void BookIssued::getDetails()
 {
     cout << "Id: " << setw(10) << BookId << endl;
@@ -660,7 +700,7 @@ long long BookIssued::CalculateFine(string UserId)
     {
         ReturnDate = "";
     }
-    return max((days_kept-max_days)*5,0);
+    return max((days_kept-max_days*((int)isRenew()+1))*5,0);
 }
 void BookIssued::AcceptFine(long long fine)
 {
@@ -688,20 +728,56 @@ public:
     void editDepartment(string dep);
     void payfine();
     void payfine(int);                                          //CORRECTION
-    void inc_num_of_books();
-    void dec_num_of_books();
+    void inc_num_of_books(){num_of_books_issued++;}
+    void dec_num_of_books(){num_of_books_issued--;}
     int getBooksIssued()
     {
         return num_of_books_issued;
     }
     void getHistory();      //CORRECTION
-    void updateHistory(string Resid);
+    void updateHistory(string Resid, Library &);
     void change_history_status(string ResId, string Date);
+    void RenewResource(string ResId);
     virtual int getJournalsIssued() = 0;
     virtual void view_my_profile() = 0;
     virtual void edit_my_profile() = 0;
 };
-
+void User::updateHistory(string Resid, Library &lib)
+{
+    Resource* res = lib.search_by_Id(Resid);
+    history.push_back(new BookIssued(res));
+    return;
+}
+void User::RenewResource(string ResId)
+{
+    if(getId()[0] == 'N')
+    {
+        cout << "You cannot renew :'(\n";
+        return;
+    }
+    else
+    {
+        vector<BookIssued*>::iterator it = history.begin();
+        while(it != history.end())
+        {
+            if((*it)->getId() == ResId)
+            {
+                if((*it)->getStatus())
+                {
+                    if(!(*it)->isRenew())
+                    {
+                        (*it)->ChangeRenew();
+                        cout << "Renewed!\n";
+                        return;
+                    }
+                    break;
+                }
+            }
+        }
+    }
+    cout << "Cannot Renew:(\n";
+    return;
+}
 
 void User::payfine(int fine)
 {
@@ -765,6 +841,7 @@ void User::change_history_status(string ResId, string Date)
     {
         if((*it)->getId() == ResId)
         {
+            (*it)->setStatus(!(*it)->getStatus());
             /*
             (*it)->Status = 0;      											//note
 			(*it)->setReturnDate(Date);
@@ -1772,7 +1849,53 @@ bool Staff::IssueResource(string UserId, string ResourceId, Library &lib)
             else
                 days = 7;
             Resource* resource = lib.search_by_Id(ResourceId);
-            resource->update_history(UserId, Date, true, days);
+            if(!resource->getStatus())
+            {
+                cout << resource->getTitle() << " Not Available\n";
+                return false;
+            }
+            if(resource){
+                resource->update_history(UserId, Date, true, days);
+                if(UserId[0] == 'N')
+                {
+                    NonPhd* nphd = lib.get_user_nonphd(UserId);
+                    if(!nphd)
+                    {
+                        cout << "No such Non phd student exists.\n";
+                        return false;
+                    }
+                    nphd->updateHistory(ResourceId, lib);
+                    if(ResourceId[0] == 'B')
+                        nphd->inc_num_of_books();
+                }
+                else if(UserId[0] == 'P')
+                {
+                    Phd* phd = lib.get_user_phd(UserId);
+                    if(!phd)
+                    {
+                        cout << "No such phd student exists\n";
+                    }
+                    phd->updateHistory(ResourceId, lib);
+                    if(ResourceId[0] == 'B')
+                        phd->inc_num_of_books();
+                    else if(ResourceId[0] == 'J')
+                        phd->inc_num_of_journals();
+                }
+                else if(UserId[0] == 'F')
+                {
+                    Faculty* facl = lib.get_user_faculty(UserId);
+                    if(!facl)
+                    {
+                        cout << "No such faculty\n";
+                        return false;
+                    }
+                    facl->updateHistory(ResourceId, lib);
+                    if(ResourceId[0] == 'B')
+                        facl->inc_num_of_books();
+                    else if(ResourceId[0] == 'J')
+                        facl->inc_num_of_journals();
+                }
+            }
             return true;
         }
     }
@@ -1791,7 +1914,13 @@ void Staff::ReturnResource(string UserId, string ResId, Library &lib)
             {
                 Phd* phd = lib.get_user_phd(UserId);
                 if(phd)
+                {
                     phd->change_history_status(ResId, date);
+                    if(ResId[0] == 'B')
+                        phd->dec_num_of_books();
+                    else
+                        phd->dec_num_of_journals();
+                }
                 else
                     cout << "No such Phd student\n";
             }
@@ -1799,15 +1928,24 @@ void Staff::ReturnResource(string UserId, string ResId, Library &lib)
             {
                 NonPhd* nphd = lib.get_user_nonphd(UserId);
                 if(nphd)
-                    nphd->change_history_status(ResId, date);
+                    {
+                        nphd->change_history_status(ResId, date);
+                        nphd->dec_num_of_books();
+                    }
                 else
-                    cout << "No such NonPhd student\n";
+                    cout << "No such Non Phd student\n";
             }
             else
             {
                 Faculty* faculty = lib.get_user_faculty(UserId);
                 if(faculty)
-                    faculty->change_history_status(ResId, date);
+                    {
+                        faculty->change_history_status(ResId, date);
+                        if(ResId[0] == 'B')
+                            faculty->dec_num_of_books();
+                        else if(ResId[0] == 'J')
+                            faculty->dec_num_of_journals();
+                    }
                 else
                     cout << "No such faculty\n";
             }
@@ -1950,6 +2088,11 @@ int main()
         cin_check;cin.get();
         system("CLS");
         Library mylib("IITJ", 8320130726LL);
+        mylib.AddMember();
+    	//mylib.AddMember();
+    	string id = "NC", iid = "Sadmin";
+    	//NonPhd* chinmay = mylib.Login_as_Non_Phd(id);
+        Staff* st = mylib.Login_as_Staff(iid);
         while(1)
         {
             cout << "Instructions:\n";
