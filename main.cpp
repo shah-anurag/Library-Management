@@ -14,6 +14,7 @@ using namespace std;
 class Resource;
 class Member;
 class IssuedBy;
+class Staff;
 class Phd;
 class NonPhd;
 class Faculty;
@@ -26,6 +27,7 @@ class Library
     vector<Phd*> phd;
     vector<NonPhd*> nphd;
     vector<Faculty*> faculty;
+    vector<Staff*> staff;
     vector<Member*> member;
 
 public:
@@ -527,13 +529,15 @@ public:
     {
         return Id;
     }
-    virtual int getBooksIssued() = 0;
+    //virtual int getBooksIssued() = 0;
     //virtual void change_history_status(string ResId, string Date) = 0;
 };
 
 class Staff: public Member
 {
 public:
+    Staff(string name, string JoinDate, string Id, long long ph_num, string password, string address = "", string emailId = ""):
+        Member(name, JoinDate, Id, ph_num, password, address, emailId){}
     void ViewProfile(string Id);    //CORRECTION
     bool IssueResource(string UserId, string ResourceId, Library &);
     void ReturnResource(string UserId, string ResId, Library &);
@@ -544,6 +548,7 @@ public:
     }
     void view_my_profile();
     void edit_my_profile();
+
     //void change_history_status(string ResId, string Date){}
 };
 
@@ -1232,28 +1237,17 @@ bool Library::VerifyResource(string Id)
 }
 bool Library::CheckLimit(string Id)
 {
-    Member* current = nullptr;
-    auto it = member.begin();
-    while(it != member.end())
+    if(Id[0] == 'N')
     {
-        if((*it)->getId() == Id)
-        {
-            current = *it;
-            break;
-        }
-        it++;
+        NonPhd* current = Library::get_user_nonphd(Id);
+        if(current)
+            return Student::getBookLimit()>current->getBooksIssued();
+        throw;
     }
-    if(it == member.end())
+    else if(Id[0] == 'P')
     {
-        cout << "Invalid Id\n";
-        return false;
-    }
-    if(Id[0] == 'S' && Id[1] == 'N')
-    {
-        return Student::getBookLimit()>current->getBooksIssued();
-    }
-    else if(Id[0] == 'S' && Id[1] == 'P')
-    {
+        Phd* current = Library::get_user_phd(Id);
+        if(!current) throw;
         cout << "You want to check limit for\n1. Journal\n2.Book\nPress 1 or 2";
         char ch;
         cin_check;cin >> ch;
@@ -1268,6 +1262,8 @@ bool Library::CheckLimit(string Id)
     }
     else if(Id[0] == 'F')
     {
+        Faculty* current = Library::get_user_faculty(Id);
+        if(!current) throw;
         cout << "You want to check limit for\n1. Journal\n2.Book\nPress 1 or 2";
         char ch;
         cin_check;cin >> ch;
@@ -1288,7 +1284,7 @@ bool Library::CheckLimit(string Id)
 void Library::AddMember()
 {
     Member* mem = nullptr;
-    cout << "1 Phd Student\n2 NonPhd Student\n3Faculty\nSelect appropriately\n";
+    cout << "1 Phd Student\n2 NonPhd Student\n3Faculty\n4.Staff\nSelect appropriately\n";
     int x;
     if(cin.fail())
     {
@@ -1415,6 +1411,69 @@ void Library::AddMember()
             Faculty* faculty = new Faculty(name, JoinDate, Id, ph_num, password, department, address, emailId);
             Library::member.push_back(faculty);
             Library::faculty.push_back(faculty);
+            break;
+        }
+    case 4:
+        {
+            string name, JoinDate, Id, address = "", password, emailId = "", department;
+            long long ph_num;
+            cout << "Enter your name: ";
+            if(cin.fail())
+            {
+                cin.clear();
+                cin.ignore(INT_MAX, '\n');
+            }
+            cin >> name;
+            cout << "Enter Id: ";
+            if(cin.fail())
+            {
+                cin.clear();
+                cin.ignore(INT_MAX, '\n');
+            }
+            cin >> Id;
+            while(Id[0] != 'S')
+            {
+                cout << "First alphabet should be 'S'\nTry again.";
+                cin >> Id;
+            }
+            cout << "Enter phone number: ";
+            if(cin.fail())
+            {
+                cin.clear();
+                cin.ignore(INT_MAX, '\n');
+            }
+            cin >> ph_num;
+            cout << "Enter address: ";
+            if(cin.fail())
+            {
+                cin.clear();
+                cin.ignore(INT_MAX, '\n');
+            }
+            cin >> address;
+            cout << "Enter password: ";
+            if(cin.fail())
+            {
+                cin.clear();
+                cin.ignore(INT_MAX, '\n');
+            }
+            cin >> password;
+            cout << "Enter email id: ";
+            if(cin.fail())
+            {
+                cin.clear();
+                cin.ignore(INT_MAX, '\n');
+            }
+            cin >> emailId;
+            cout << "Enter Department: ";
+            if(cin.fail())
+            {
+                cin.clear();
+                cin.ignore(INT_MAX, '\n');
+            }
+            cin >> department;
+            Staff* staff = new Staff(name, JoinDate, Id, ph_num, password, address, emailId);
+            Library::member.push_back(staff);
+            Library::staff.push_back(staff);
             break;
         }
     default:
@@ -1833,20 +1892,43 @@ void Staff::edit_my_profile()
 
 int main()
 {
-    cout << "\t\tWelcome to IITJ Automated Library\n";
-    cout << "\n\n";
-    cout << "Authors:\n";
-    cout << "Anurag Shah B16CS034\n";
-    cout << "Chinmay Garg B16CS041\n";
-    cout << "@All Copyrights reserved\n";
-    cout << "\nPress any key to continue";
-    cin_check;cin.get();
-    system("CLS");
-    Library mylib("IITJ", 8320130726LL);
-    while(1)
+    try{
+        cout << "\t\tWelcome to IITJ Automated Library\n";
+        cout << "\n\n";
+        cout << "Authors:\n";
+        cout << "Anurag Shah B16CS034\n";
+        cout << "Chinmay Garg B16CS041\n";
+        cout << "@All Copyrights reserved\n";
+        cout << "\nPress any key to continue";
+        cin_check;cin.get();
+        system("CLS");
+        Library mylib("IITJ", 8320130726LL);
+        while(1)
+        {
+            cout << "Instructions:\n";
+            cout << "1. ";
+            cout << "2. ";
+            cout << "3. ";
+            cout << "4. exit";
+            int u;
+            cin_check;
+            cin >> u;
+            switch(u)
+            {
+            case 1:
+                {
+                    break;
+                }
+            default:
+                {
+                    break;
+                }
+            }
+        }
+    }
+    catch(...)
     {
-        cout << "Instructions:\n";
-        cout << "1. ";
+        cout << "Exception";
     }
     return 0;
 }
