@@ -3,6 +3,7 @@
 #include<vector>
 #include<set>
 #include<algorithm>
+#include<limits.h>
 #include<stdlib.h>
 #include<sstream>
 #include<iomanip>
@@ -11,7 +12,7 @@
 
 using namespace std;
 
-bool first = 0;
+bool first = 1;
 
 class Resource;
 class Member;
@@ -59,6 +60,7 @@ public:
     Phd* get_user_phd(string UserId);
     NonPhd* get_user_nonphd(string UserId);
     Faculty* get_user_faculty(string UserId);
+    Staff* get_user_staff(string UserId);
     NonPhd* Login_as_Non_Phd(string);
     Phd* Login_as_Phd(string);
     Staff* Login_as_Staff(string);
@@ -77,19 +79,25 @@ class Resource
         bool status;
         vector<IssuedBy*> history;
     public:
-        Resource(string author,string title,string Id,string DateOfPurchase, int Edition, bool status, double RackNumber):
-            author(author), title(title), Id(Id), date_of_purchase(DateOfPurchase), Edition(Edition), status(status), rack_num(RackNumber){}
+        Resource(string author,string title,string Id,string DateOfPurchase, int Edition, double RackNumber):
+            author(author), title(title), Id(Id), date_of_purchase(DateOfPurchase), Edition(Edition), rack_num(RackNumber)
+            {
+                status = true;
+            }
         bool getStatus();
         string getAuthor();
         string getTitle();
         string getId();
         string getDateOfPurchase();
         double getRackNumber();
+        void gethistory(Library&);
         int GetEdition();        //CORRECTION
         void change_status(bool status);
         void update_history(string UserId, string IssueDate, bool status, int days);
         virtual vector<string> getTopic() = 0;
+        virtual void getdetails() = 0;
 };
+
 
 class IssuedBy
 {
@@ -104,6 +112,7 @@ public:
     void EditId();
     void EditIssueDate(string);       //CORRECTION
     void setDays(int);
+    void getdetails(Library&);
 };
 
 bool Resource::getStatus()
@@ -195,15 +204,28 @@ class Book: public Resource
     string name;
 
 public:
-    Book(string author,string title,string Id,string DateOfPurchase,int Edition,bool status,double RackNumber,string SubjectName,int SubCode):
-    Resource(author, title, Id, DateOfPurchase, Edition, status, RackNumber), SubjectCode(SubjectCode), name(title){}
+    Book(string author,string title,string Id,string DateOfPurchase,int Edition,double RackNumber,string SubjectName,int SubCode):
+    Resource(author, title, Id, DateOfPurchase, Edition, RackNumber), SubjectCode(SubjectCode), name(title){}
     void Update();
     void AddSubject();
     void DeleteSubject(string subject);
     string getSubjectName();
     int getSubjectCode();
     vector<string> getTopic();
+    void getdetails();
 };
+
+void Book::getdetails()
+{
+    cout << "Subject Code: " << SubjectCode << endl;
+    cout << "Author: " << getAuthor() << endl;
+    cout << "Title: " << getTitle() << endl;
+    cout << "Id: " << getId() << endl;
+    cout << "Edition: " << GetEdition() << endl;
+    cout << "date_of_purchase: " << getDateOfPurchase() << endl;
+    cout << "Rack number: " << getRackNumber() << endl;
+    return;
+}
 
 void Book::Update()
 {
@@ -212,7 +234,7 @@ void Book::Update()
     cout << "Update? Enter y or n: ";
     cin_check;
     cin >> update;
-    if(update != 'y' || update != 'n')
+    if(update != 'y' && update != 'n')
     {
         cout << "Invalid input ";
         return;
@@ -229,7 +251,7 @@ void Book::Update()
     cout << "Update? Enter y or n: ";
     cin_check;
     cin >> update;
-    if(update != 'y' || update != 'n')
+    if(update != 'y' && update != 'n')
     {
         cout << "Invalid input ";
         return;
@@ -246,7 +268,7 @@ void Book::Update()
     cout << "Update? Enter y or n: ";
     cin_check;
     cin >> update;
-    if(update != 'y' || update != 'n')
+    if(update != 'y' && update != 'n')
     {
         cout << "Invalid input";
         return;
@@ -263,7 +285,7 @@ void Book::Update()
     cout << "Update? Enter y or n: ";
     cin_check;
     cin >> update;
-    if(update != 'y' || update != 'n')
+    if(update != 'y' && update != 'n')
     {
         cout << "Invalid input ";
         return;
@@ -280,7 +302,7 @@ void Book::Update()
     cout << "Update? Enter y or n: ";
     cin_check;
     cin >> update;
-    if(update != 'y' || update != 'n')
+    if(update != 'y' && update != 'n')
     {
         cout << "Invalid input ";
         return;
@@ -297,7 +319,7 @@ void Book::Update()
     cout << "Update? Enter y or n: ";
     cin_check;
     cin >> update;
-    if(update != 'y' || update != 'n')
+    if(update != 'y' && update != 'n')
     {
         cout << "Invalid input ";
         return;
@@ -314,7 +336,7 @@ void Book::Update()
     cout << "Update? Enter y or n: ";
     cin_check;
     cin >> update;
-    if(update != 'y' || update != 'n')
+    if(update != 'y' && update != 'n')
     {
         cout << "Invalid input ";
         return;
@@ -353,8 +375,8 @@ class Journal: public Resource
     vector<string> topic;
 
 public:
-    Journal(string author,string title,string Id,string DateOfPurchase,int Edition,bool status,double RackNumber,string PublicationDate,vector<string> topic):
-    Resource(author, title, Id, DateOfPurchase, Edition, status, RackNumber),PublicationDate(PublicationDate)
+    Journal(string author,string title,string Id,string DateOfPurchase,int Edition,double RackNumber,string PublicationDate,vector<string> topic):
+    Resource(author, title, Id, DateOfPurchase, Edition, RackNumber),PublicationDate(PublicationDate)
     {
         int idx = 0;
         string last = "y";
@@ -369,7 +391,22 @@ public:
         return PublicationDate;
     }
     vector<string> getTopic();
+    void getdetails();
 };
+
+
+void Journal::getdetails()
+{
+    cout << "Author: " << getAuthor() << endl;
+    cout << "Title: " << getTitle() << endl;
+    cout << "Id: " << getId() << endl;
+    cout << "Topics: " << endl;
+    for(int i = 0; i < topic.size(); i++) cout << i+1 << " " << topic[i] << endl;
+    cout << "Edition: " << GetEdition() << endl;
+    cout << "date_of_purchase: " << getDateOfPurchase() << endl;
+    cout << "Rack number: " << getRackNumber() << endl;
+    return;
+}
 
 void Journal::Update()
 {
@@ -377,7 +414,7 @@ void Journal::Update()
     cout << "Author: " << getAuthor() << endl;
     cout << "Update? Enter y or n: ";
     cin_check;cin >> update;
-    if(update != 'y' || update != 'n')
+    if(update != 'y' && update != 'n')
     {
         cout << "Invalid input ";
         return;
@@ -392,7 +429,7 @@ void Journal::Update()
     cout << "Title: " << getTitle() << endl;
     cout << "Update? Enter y or n: ";
     cin_check;cin >> update;
-    if(update != 'y' || update != 'n')
+    if(update != 'y' && update != 'n')
     {
         cout << "Invalid input ";
         return;
@@ -407,7 +444,7 @@ void Journal::Update()
     cout << "Edition: " << GetEdition() << endl;
     cout << "Update? Enter y or n: ";
     cin_check;cin >> update;
-    if(update != 'y' || update != 'n')
+    if(update != 'y' && update != 'n')
     {
         cout << "Invalid input";
         return;
@@ -422,7 +459,7 @@ void Journal::Update()
     cout << "Date of Purchase: " << getDateOfPurchase() << endl;
     cout << "Update? Enter y or n: ";
     cin_check;cin >> update;
-    if(update != 'y' || update != 'n')
+    if(update != 'y' && update != 'n')
     {
         cout << "Invalid input ";
         return;
@@ -437,7 +474,7 @@ void Journal::Update()
     cout << "Rack number: " << getRackNumber() << endl;
     cout << "Update? Enter y or n: ";
     cin_check;cin >> update;
-    if(update != 'y' || update != 'n')
+    if(update != 'y' && update != 'n')
     {
         cout << "Invalid input ";
         return;
@@ -452,7 +489,7 @@ void Journal::Update()
     cout << "Publication date : " << PublicationDate << endl;
     cout << "Update? Enter y or n: ";
     cin_check;cin >> update;
-    if(update != 'y' || update != 'n')
+    if(update != 'y' && update != 'n')
     {
         cout << "Invalid input ";
         return;
@@ -531,10 +568,12 @@ public:
     virtual void edit_my_profile() = 0;
     virtual int getJournalsIssued() = 0;
     void edit_password();
+    string getpassword() {return password;}
     string getId()
     {
         return Id;
     }
+    string getname(){return name;}
     //virtual int getBooksIssued() = 0;
     //virtual void change_history_status(string ResId, string Date) = 0;
 };
@@ -663,6 +702,8 @@ long long BookIssued::CalculateFine(string UserId)
     convert_days >> days;
     convert_month >> month;
     convert_year >> year;
+    cout << "RETURN DATE\n";
+    cout << days << " " << month << " " << year << endl;
     int issue_year = 0, issue_month = 0, issue_day = 0;
     string y1,m1,d1;
     for(int i = 0; i < 2; i++) d1.push_back(IssueDate[i]);
@@ -742,6 +783,17 @@ public:
     virtual void view_my_profile() = 0;
     virtual void edit_my_profile() = 0;
 };
+
+void User::getHistory()
+{
+    vector<BookIssued*>::iterator it = history.begin();
+    while(it != history.end())
+    {
+        (*it)->getDetails();
+        it++;
+    }
+}
+
 void User::updateHistory(string Resid, Library &lib)
 {
     Resource* res = lib.search_by_Id(Resid);
@@ -783,11 +835,12 @@ void User::payfine(int fine)
 {
     vector<BookIssued*>::iterator it = history.begin();
     long long int sum = fine;
-    while(it != history.end() && !(*it)->CalculateFine(getId()))
+    while(it != history.end())
     {
         sum += (*it)->CalculateFine(getId());
         it++;
         (*it)->getDetails();
+        it++;
     }
     it--;
     while(sum && it != history.begin()-1)
@@ -808,12 +861,12 @@ void User::payfine()
 {
     vector<BookIssued*>::iterator it = history.begin();
 			long long int sum = 0;
-			while(it != history.end() && !(*it)->CalculateFine(getId()))
+			while(it != history.end())
 			{
 				sum += (*it)->CalculateFine(getId());
-				it++;
 				(*it)->getDetails();
-				cout << " Fine = " << (*it)->CalculateFine(getId()) << "\n";
+				//cout << " Fine = " << (*it)->CalculateFine(getId()) << "\n";
+				it++;
 			}
 			cout << "Total fine = " << sum << endl;
 			cout << "Enter amount paid\n";
@@ -842,6 +895,7 @@ void User::change_history_status(string ResId, string Date)
         if((*it)->getId() == ResId)
         {
             (*it)->setStatus(!(*it)->getStatus());
+            (*it)->CalculateFine(ResId);
             /*
             (*it)->Status = 0;      											//note
 			(*it)->setReturnDate(Date);
@@ -943,7 +997,7 @@ void Faculty::edit_my_profile()
     cout << "Name: " << name << endl;
     cout << "Update? Enter y or n: ";
     cin_check;cin >> update;
-    if(update != 'y' || update != 'n')
+    if(update != 'y' && update != 'n')
     {
         cout << "Invalid input ";
         return;
@@ -958,7 +1012,7 @@ void Faculty::edit_my_profile()
     cout << "Join Date: " << JoinDate << endl;
     cout << "Update? Enter y or n: ";
     cin_check;cin >> update;
-    if(update != 'y' || update != 'n')
+    if(update != 'y' && update != 'n')
     {
         cout << "Invalid input ";
         return;
@@ -973,7 +1027,7 @@ void Faculty::edit_my_profile()
     cout << "Phone number: " << ph_num << endl;
     cout << "Update? Enter y or n: ";
     cin_check;cin >> update;
-    if(update != 'y' || update != 'n')
+    if(update != 'y' && update != 'n')
     {
         cout << "Invalid input";
         return;
@@ -988,7 +1042,7 @@ void Faculty::edit_my_profile()
     cout << "Address: " << address << endl;
     cout << "Update? Enter y or n: ";
     cin_check;cin >> update;
-    if(update != 'y' || update != 'n')
+    if(update != 'y' && update != 'n')
     {
         cout << "Invalid input ";
         return;
@@ -1003,7 +1057,7 @@ void Faculty::edit_my_profile()
     cout << "email id: " << emailId << endl;
     cout << "Update? Enter y or n: ";
     cin_check;cin >> update;
-    if(update != 'y' || update != 'n')
+    if(update != 'y' && update != 'n')
     {
         cout << "Invalid input ";
         return;
@@ -1018,7 +1072,7 @@ void Faculty::edit_my_profile()
     cout << "Department : " << Department << endl;
     cout << "Update? Enter y or n: ";
     cin_check;cin >> update;
-    if(update != 'y' || update != 'n')
+    if(update != 'y' && update != 'n')
     {
         cout << "Invalid input ";
         return;
@@ -1077,7 +1131,7 @@ void NonPhd::edit_my_profile()
     cout << "Name: " << name << endl;
     cout << "Update? Enter y or n: ";
     cin_check;cin >> update;
-    if(update != 'y' || update != 'n')
+    if(update != 'y' && update != 'n')
     {
         cout << "Invalid input ";
         return;
@@ -1092,7 +1146,7 @@ void NonPhd::edit_my_profile()
     cout << "Join Date: " << JoinDate << endl;
     cout << "Update? Enter y or n: ";
     cin_check;cin >> update;
-    if(update != 'y' || update != 'n')
+    if(update != 'y' && update != 'n')
     {
         cout << "Invalid input ";
         return;
@@ -1107,7 +1161,7 @@ void NonPhd::edit_my_profile()
     cout << "Phone number: " << ph_num << endl;
     cout << "Update? Enter y or n: ";
     cin_check;cin >> update;
-    if(update != 'y' || update != 'n')
+    if(update != 'y' && update != 'n')
     {
         cout << "Invalid input";
         return;
@@ -1122,7 +1176,7 @@ void NonPhd::edit_my_profile()
     cout << "Address: " << address << endl;
     cout << "Update? Enter y or n: ";
     cin_check;cin >> update;
-    if(update != 'y' || update != 'n')
+    if(update != 'y' && update != 'n')
     {
         cout << "Invalid input ";
         return;
@@ -1137,7 +1191,7 @@ void NonPhd::edit_my_profile()
     cout << "email id: " << emailId << endl;
     cout << "Update? Enter y or n: ";
     cin_check;cin >> update;
-    if(update != 'y' || update != 'n')
+    if(update != 'y' && update != 'n')
     {
         cout << "Invalid input ";
         return;
@@ -1152,7 +1206,7 @@ void NonPhd::edit_my_profile()
     cout << "Department : " << Department << endl;
     cout << "Update? Enter y or n: ";
     cin_check;cin >> update;
-    if(update != 'y' || update != 'n')
+    if(update != 'y' && update != 'n')
     {
         cout << "Invalid input ";
         return;
@@ -1213,12 +1267,12 @@ void Phd::edit_my_profile()
     cout << "Name: " << name << endl;
     cout << "Update? Enter y or n: ";
     cin_check;cin >> update;
-    if(update != 'y' || update != 'n')
+    if(update != 'y' && update != 'n')
     {
         cout << "Invalid input ";
         return;
     }
-    else
+    else if(update == 'y')
     {
         string cur_name;
         cout << "Enter your name: ";
@@ -1228,12 +1282,12 @@ void Phd::edit_my_profile()
     cout << "Join Date: " << JoinDate << endl;
     cout << "Update? Enter y or n: ";
     cin_check;cin >> update;
-    if(update != 'y' || update != 'n')
+    if(update != 'y' && update != 'n')
     {
         cout << "Invalid input ";
         return;
     }
-    else
+    else if(update == 'y')
     {
         string join;
         cout << "Enter the Join Date: ";
@@ -1243,12 +1297,12 @@ void Phd::edit_my_profile()
     cout << "Phone number: " << ph_num << endl;
     cout << "Update? Enter y or n: ";
     cin_check;cin >> update;
-    if(update != 'y' || update != 'n')
+    if(update != 'y' && update != 'n')
     {
         cout << "Invalid input";
         return;
     }
-    else
+    else if(update == 'y')
     {
         long long curr_ph;
         cout << "Enter the phone number: ";
@@ -1258,27 +1312,27 @@ void Phd::edit_my_profile()
     cout << "Address: " << address << endl;
     cout << "Update? Enter y or n: ";
     cin_check;cin >> update;
-    if(update != 'y' || update != 'n')
+    if(update != 'y' && update != 'n')
     {
         cout << "Invalid input ";
         return;
     }
-    else
+    else if(update == 'y')
     {
         string cur_address;
         cout << "Enter address: ";
-        cin_check;cin >> cur_address;
+        cin_check;getline(cin, cur_address);
         address = cur_address;
     }
     cout << "email id: " << emailId << endl;
     cout << "Update? Enter y or n: ";
     cin_check;cin >> update;
-    if(update != 'y' || update != 'n')
+    if(update != 'y' && update != 'n')
     {
         cout << "Invalid input ";
         return;
     }
-    else
+    else if(update == 'y')
     {
         string email_id;
         cout << "Enter email id: ";
@@ -1288,12 +1342,12 @@ void Phd::edit_my_profile()
     cout << "Department : " << Department << endl;
     cout << "Update? Enter y or n: ";
     cin_check;cin >> update;
-    if(update != 'y' || update != 'n')
+    if(update != 'y' && update != 'n')
     {
         cout << "Invalid input ";
         return;
     }
-    else
+    else if(update == 'y')
     {
         string cur_dep;
         cout << "Enter the department: ";
@@ -1306,18 +1360,24 @@ void Phd::edit_my_profile()
 
 bool Library::VerifyMemberId(string Id)
 {
-    auto it = member.begin();
+    vector<Member*>::iterator it = member.begin();
     while(it != member.end())
+    {
         if((*it)->getId() == Id)
-            return true;
+        return true;
+        it++;
+    }
     return false;
 }
 bool Library::VerifyResource(string Id)
 {
-    auto it = resources.begin();
+    vector<Resource*>::iterator it = resources.begin();
     while(it != resources.end())
+    {
         if((*it)->getId() == Id)
             return true;
+        it++;
+    }
     return false;
 }
 bool Library::CheckLimit(string Id)
@@ -1333,12 +1393,13 @@ bool Library::CheckLimit(string Id)
     {
         Phd* current = Library::get_user_phd(Id);
         if(!current) throw;
-        cout << "You want to check limit for\n1. Journal\n2.Book\nPress 1 or 2";
-        char ch;
+        cout << "You want to check limit for\n1. Journal\n2.Book\nPress 1 or 2" << endl;
+        int ch;
         cin_check;cin >> ch;
-        if(ch == '1')
+        cout << "ch = " << ch << " Student::getBookLimit() = " << Student::getBookLimit() << " current->getBooksIssued() = " << current->getBooksIssued() << endl;
+        if(ch == 1)
             return Phd::getMaxJournalLimit() > current->getJournalsIssued();
-        else if(ch == '2')
+        else if(ch == 2)
             return Student::getBookLimit()>current->getBooksIssued();
         else {
                 cout << "Invalid Input\n";
@@ -1368,6 +1429,16 @@ bool Library::CheckLimit(string Id)
 }
 void Library::AddMember()
 {
+    if(first)
+    {
+        string name, JoinDate, Id, address = "", password, emailId = "", department;
+        long long ph_num;
+        Staff* staff = new Staff(name = "Anurag", JoinDate = "02/04/2018", Id = "Sadmin", ph_num = 101LL, password = "admin", address = "Office of academics", emailId = "anurag.2@iitj.ac.in");
+        Library::member.push_back(staff);
+        Library::staff.push_back(staff);
+        first = false;
+        return;
+    }
     Member* mem = nullptr;
     cout << "1 Phd Student\n2 NonPhd Student\n3Faculty\n4.Staff\nSelect appropriately\n";
     int x;
@@ -1384,58 +1455,31 @@ void Library::AddMember()
             string name, JoinDate, Id, address = "", password, emailId = "", department;
             long long ph_num;
             cout << "Enter your name: ";
-            if(cin.fail())
-            {
-                cin.clear();
-                cin.ignore(INT_MAX, '\n');
-            }
+            cin_check;
             cin >> name;
             cout << "Enter Id: ";
-            if(cin.fail())
-            {
-                cin.clear();
-                cin.ignore(INT_MAX, '\n');
-            }
+            cin_check;
             cin >> Id;
             while(Id[0] != 'P')
             {
                 cout << "First alphabet should be 'P'\nTry again.";
-                cin >> Id;
+                cin_check;cin >> Id;
             }
             cout << "Enter phone number: ";
-            if(cin.fail())
-            {
-                cin.clear();
-                cin.ignore(INT_MAX, '\n');
-            }
+            cin_check;
             cin >> ph_num;
             cout << "Enter address: ";
-            if(cin.fail())
-            {
-                cin.clear();
-                cin.ignore(INT_MAX, '\n');
-            }
-            cin >> address;
+            cin_check;
+            cin.ignore(INT_MAX, '\n');
+            getline(cin,address);
             cout << "Enter password: ";
-            if(cin.fail())
-            {
-                cin.clear();
-                cin.ignore(INT_MAX, '\n');
-            }
+            cin_check;
             cin >> password;
             cout << "Enter email id: ";
-            if(cin.fail())
-            {
-                cin.clear();
-                cin.ignore(INT_MAX, '\n');
-            }
+            cin_check;
             cin >> emailId;
             cout << "Enter Department: ";
-            if(cin.fail())
-            {
-                cin.clear();
-                cin.ignore(INT_MAX, '\n');
-            }
+            cin_check;
             cin >> department;
             Phd* phd = new Phd(name, JoinDate, Id, ph_num, password, department, address, emailId);
             Library::member.push_back(phd);
@@ -1456,17 +1500,19 @@ void Library::AddMember()
                 cin >> Id;
             }
             cout << "Enter phone number: ";
-            cin >> ph_num;
+            cin_check;cin >> ph_num;
             cout << "Enter address: ";
+            cin_check;
+            cin.ignore(INT_MAX, '\n');
             getline(cin, address, '\n');
             cout << "Enter password: ";
-            cin >> password;
+            cin_check;cin >> password;
             cout << "Enter email id: ";
-            cin >> emailId;
+            cin_check;cin >> emailId;
             cout << "Enter Department: ";
-            cin >> department;
+            cin_check;cin >> department;cin_check;
             NonPhd* nonphd = new NonPhd(name, JoinDate, Id, ph_num, password, department, 1, address, emailId);
-            member.push_back(nonphd);
+            Library::member.push_back(nonphd);
             Library::nphd.push_back(nonphd);
             break;
         }
@@ -1483,16 +1529,16 @@ void Library::AddMember()
                 cout << "First alphabet should be 'F'\nTry again.";
                 cin >> Id;
             }
-            cout << "Enter phone number: ";
+            cout << "Enter phone number: ";cin_check;
             cin >> ph_num;
-            cout << "Enter address: ";
+            cout << "Enter address: ";cin_check;cin.ignore(INT_MAX, '\n');
             cin >> address;
-            cout << "Enter password: ";
+            cout << "Enter password: ";cin_check;
             cin >> password;
-            cout << "Enter email id: ";
+            cout << "Enter email id: ";cin_check;
             cin >> emailId;
-            cout << "Enter Department: ";
-            cin >> department;
+            cout << "Enter Department: ";cin_check;
+            cin >> department;cin_check;
             Faculty* faculty = new Faculty(name, JoinDate, Id, ph_num, password, department, address, emailId);
             Library::member.push_back(faculty);
             Library::faculty.push_back(faculty);
@@ -1503,18 +1549,10 @@ void Library::AddMember()
             string name, JoinDate, Id, address = "", password, emailId = "", department;
             long long ph_num;
             cout << "Enter your name: ";
-            if(cin.fail())
-            {
-                cin.clear();
-                cin.ignore(INT_MAX, '\n');
-            }
+            cin_check;
             cin >> name;
             cout << "Enter Id: ";
-            if(cin.fail())
-            {
-                cin.clear();
-                cin.ignore(INT_MAX, '\n');
-            }
+            cin_check;
             cin >> Id;
             while(Id[0] != 'S')
             {
@@ -1522,40 +1560,19 @@ void Library::AddMember()
                 cin >> Id;
             }
             cout << "Enter phone number: ";
-            if(cin.fail())
-            {
-                cin.clear();
-                cin.ignore(INT_MAX, '\n');
-            }
+            cin_check;
             cin >> ph_num;
             cout << "Enter address: ";
-            if(cin.fail())
-            {
-                cin.clear();
-                cin.ignore(INT_MAX, '\n');
-            }
+            cin_check;
+            cin.ignore(INT_MAX, '\n');
             cin >> address;
             cout << "Enter password: ";
-            if(cin.fail())
-            {
-                cin.clear();
-                cin.ignore(INT_MAX, '\n');
-            }
+            cin_check;
             cin >> password;
             cout << "Enter email id: ";
-            if(cin.fail())
-            {
-                cin.clear();
-                cin.ignore(INT_MAX, '\n');
-            }
+            cin_check;
             cin >> emailId;
-            cout << "Enter Department: ";
-            if(cin.fail())
-            {
-                cin.clear();
-                cin.ignore(INT_MAX, '\n');
-            }
-            cin >> department;
+            cin_check;
             Staff* staff = new Staff(name, JoinDate, Id, ph_num, password, address, emailId);
             Library::member.push_back(staff);
             Library::staff.push_back(staff);
@@ -1579,16 +1596,27 @@ void Library::AddNewResource()
     {
         string author, title, Id, DateOfPurchase, SubjectName;
         int Edition, SubCode;
-        bool status = false;
         double RackNumber;
         cout << "Enter Author: ";
         cin_check;cin >> author;
         cout << "Enter title: ";
         cin_check;cin >> title;
+        tp:;
         cout << "Enter Id: ";
         cin_check;cin >> Id;
+        while(Id[0] != 'B')
+        {
+            cout << "Invalid ID: ID should start with 'B', Try again...\n";
+            cin_check;cin >> Id;
+        }
+        if(Library::search_by_Id(Id))
+        {
+            cout << "This Id already exists\n";
+            goto tp;
+        }
         cout << "Enter Date of Purchase: ";
         cin_check;cin >> DateOfPurchase;
+
         cout << "Enter Subject Name: ";
         cin_check;cin >> SubjectName;
         cout << "Enter Subject code: ";
@@ -1596,21 +1624,31 @@ void Library::AddNewResource()
         cout << "Enter Edition: ";
         cin_check;cin >> Edition;
         cout << "Enter Rack Number: ";
-        cin_check;cin >> RackNumber;
-        resources.push_back(new Book(author, title, Id, DateOfPurchase, Edition, status, RackNumber, SubjectName, SubCode));
+        cin_check;cin >> RackNumber;cin_check;
+        resources.push_back(new Book(author, title, Id, DateOfPurchase, Edition, RackNumber, SubjectName, SubCode));
     }
     else if(ch == '2')
     {
         string author, title, Id, DateOfPurchase, PubDate;
         int Edition;
-        bool status = false;
         double RackNumber;
         cout << "Enter Author: ";
         cin_check;cin >> author;
         cout << "Enter title: ";
         cin_check;cin >> title;
+        up:
         cout << "Enter Id: ";
         cin_check;cin >> Id;
+        while(Id[0] != 'J')
+        {
+            cout << "Invalid ID: ID should start with 'J', Try again...\n";
+            cin_check;cin >> Id;
+        }
+        if(!Library::search_by_Id(Id));
+        {
+            cout << "This Id already exists\n";
+            goto up;
+        }
         cout << "Enter Date of Purchase: ";
         cin_check;cin >> DateOfPurchase;
         cout << "Enter Publication date: ";
@@ -1629,8 +1667,9 @@ void Library::AddNewResource()
             if(topic[num_of_topics] == last)
                 break;
         }
-        resources.push_back(new Journal(author, title, Id, DateOfPurchase, Edition, status, RackNumber, DateOfPurchase, topic));
+        resources.push_back(new Journal(author, title, Id, DateOfPurchase, Edition, RackNumber, DateOfPurchase, topic));
     }
+    return;
 }
 void Library::RemoveMember(string Id)
 {
@@ -1738,16 +1777,17 @@ void Library::ViewAllMembers()
     {
         (*it)->view_my_profile();
         cout << "------------------\n";
+        it++;
     }
 }
 void Library::ViewAllResource()
 {
-    auto it = resources.begin();
-    while(it != resources.end())
+    for(int i = 0; i < resources.size(); i++)
     {
-        (*it)->getTitle();
-        cout << "------------------\n";
+        resources[i]->getdetails();
     }
+    cout << "------------------\n";
+    return;
 }
 bool Library::RenewBook(string userId, string resId)
 {
@@ -1782,16 +1822,22 @@ NonPhd* Library::get_user_nonphd(string UserId)
 {
     vector<NonPhd*>::iterator nphd = Library::nphd.begin();
     while(nphd != Library::nphd.end())
+    {
         if((*nphd)->getId() == UserId)
             return *nphd;
+        nphd++;
+    }
     return nullptr;
 }
 Faculty* Library::get_user_faculty(string UserId)
 {
     vector<Faculty*>::iterator faculty = Library::faculty.begin();
     while(faculty != Library::faculty.end())
+    {
         if((*faculty)->getId() == UserId)
             return *faculty;
+        faculty++;
+    }
     return nullptr;
 }
 
@@ -1802,36 +1848,92 @@ NonPhd* Library::Login_as_Non_Phd(string Id)
     {
         if((*it)->getId() == Id)
             return *it;
+        it++;
+    }
+    return nullptr;
+}
+Staff* Library::get_user_staff(string UserId)
+{
+    vector<Staff*>::iterator it = staff.begin();
+    string password;
+    while(it != staff.end())
+    {
+        if((*it)->getId() == UserId)
+            {
+                cout << "Enter Password: ";
+                cin_check;
+                cin >> password;
+                while(password != (*it)->getpassword())
+                {
+                    cout << "Incorrect password. Try again...\n";
+                    cin_check;cin >> password;
+                }
+                return *it;
+            }
+        it++;
     }
     return nullptr;
 }
 Phd* Library::Login_as_Phd(string Id)
 {
     vector<Phd*>::iterator it = phd.begin();
+    string password;
     while(it != phd.end())
     {
         if((*it)->getId() == Id)
-            return *it;
+            {
+                cout << "Enter Password: ";
+                cin_check;
+                cin >> password;
+                while(password != (*it)->getpassword())
+                {
+                    cout << "Incorrect password. Try again...\n";
+                    cin_check;cin >> password;
+                }
+                return *it;
+            }
     }
     return nullptr;
 }
 Staff* Library::Login_as_Staff(string Id)
 {
     vector<Staff*>::iterator it = staff.begin();
+    string password;
     while(it != staff.end())
     {
         if((*it)->getId() == Id)
-            return *it;
+            {
+                cout << "Enter Password: ";
+                cin_check;
+                cin >> password;
+                while(password != (*it)->getpassword())
+                {
+                    cout << "Incorrect password. Try again...\n";
+                    cin_check;cin >> password;
+                }
+                return *it;
+            }
     }
     return nullptr;
 }
 Faculty* Library::Login_as_Faculty(string Id)
 {
     vector<Faculty*>::iterator it = faculty.begin();
+    string password;
     while(it != faculty.end())
     {
         if((*it)->getId() == Id)
-            return *it;
+            {
+                cout << "Enter Password: ";
+                cin_check;
+                cin >> password;
+                while(password != (*it)->getpassword())
+                {
+                    cout << "Incorrect password. Try again...\n";
+                    cin_check;cin >> password;
+                }
+                return *it;
+            }
     }
     return nullptr;
 }
@@ -1843,14 +1945,16 @@ bool Staff::IssueResource(string UserId, string ResourceId, Library &lib)
         if(lib.CheckLimit(UserId))
         {
             int days = 0;
-            string Date = "2/04/18";
+            string Date = "02/04/18";
             if(UserId[0] == 'F')
                 days = 14;
             else
                 days = 7;
             Resource* resource = lib.search_by_Id(ResourceId);
-            if(!resource->getStatus())
+            resource->getdetails();
+            if(resource->getStatus() == false)
             {
+                cout << "HERE\n";
                 cout << resource->getTitle() << " Not Available\n";
                 return false;
             }
@@ -1895,8 +1999,8 @@ bool Staff::IssueResource(string UserId, string ResourceId, Library &lib)
                     else if(ResourceId[0] == 'J')
                         facl->inc_num_of_journals();
                 }
+                return true;
             }
-            return true;
         }
     }
     return false;
@@ -1905,50 +2009,49 @@ void Staff::ReturnResource(string UserId, string ResId, Library &lib)
 {
     if(lib.VerifyMemberId(UserId) && lib.VerifyResource(ResId) && (UserId[0] == 'P' || UserId[0] == 'N' || UserId[0] == 'F'))
     {
-        if(lib.CheckLimit(UserId))
+        string date;
+        cout << "Enter today's date(dd/mm/yyyy): ";
+        cin >> date;
+        Resource* resource = lib.search_by_Id(ResId);
+        resource->change_status(false);
+        if(UserId[0] == 'P')
         {
-            string date = "4/07/18";
-            Resource* resource = lib.search_by_Id(ResId);
-            resource->change_status(false);
-            if(UserId[0] == 'P')
+            Phd* phd = lib.get_user_phd(UserId);
+            if(phd)
             {
-                Phd* phd = lib.get_user_phd(UserId);
-                if(phd)
-                {
-                    phd->change_history_status(ResId, date);
-                    if(ResId[0] == 'B')
-                        phd->dec_num_of_books();
-                    else
-                        phd->dec_num_of_journals();
-                }
+                phd->change_history_status(ResId, date);
+                if(ResId[0] == 'B')
+                    phd->dec_num_of_books();
                 else
-                    cout << "No such Phd student\n";
-            }
-            else if(UserId[0] == 'N')
-            {
-                NonPhd* nphd = lib.get_user_nonphd(UserId);
-                if(nphd)
-                    {
-                        nphd->change_history_status(ResId, date);
-                        nphd->dec_num_of_books();
-                    }
-                else
-                    cout << "No such Non Phd student\n";
+                    phd->dec_num_of_journals();
             }
             else
-            {
-                Faculty* faculty = lib.get_user_faculty(UserId);
-                if(faculty)
-                    {
-                        faculty->change_history_status(ResId, date);
-                        if(ResId[0] == 'B')
-                            faculty->dec_num_of_books();
-                        else if(ResId[0] == 'J')
-                            faculty->dec_num_of_journals();
-                    }
-                else
-                    cout << "No such faculty\n";
-            }
+                cout << "No such Phd student\n";
+        }
+        else if(UserId[0] == 'N')
+        {
+            NonPhd* nphd = lib.get_user_nonphd(UserId);
+            if(nphd)
+                {
+                    nphd->change_history_status(ResId, date);
+                    nphd->dec_num_of_books();
+                }
+            else
+                cout << "No such Non Phd student\n";
+        }
+        else
+        {
+            Faculty* faculty = lib.get_user_faculty(UserId);
+            if(faculty)
+                {
+                    faculty->change_history_status(ResId, date);
+                    if(ResId[0] == 'B')
+                        faculty->dec_num_of_books();
+                    else if(ResId[0] == 'J')
+                        faculty->dec_num_of_journals();
+                }
+            else
+                cout << "No such faculty\n";
         }
     }
     return;
@@ -1980,10 +2083,7 @@ void Staff::CollectFine(string Id, long long fine, Library &lib)
     }
     return;
 }
-void Staff::UpdateHistory(string UserId, string ResId, Library& lib)
-{
-
-}
+void Staff::UpdateHistory(string UserId, string ResId, Library& lib){}
 void Staff::view_my_profile()
 {
     cout << "\n-------------------------------------\n";
@@ -1998,14 +2098,17 @@ void Staff::edit_my_profile()
 {
     char update;
     cout << "Name: " << name << endl;
-    cout << "Update? Enter y or n: ";
-    cin_check;cin >> update;
-    if(update != 'y' || update != 'n')
+    cout << "Update? Enter y or n: " << endl;
+    cin_check;
+    //cin >> update;
+    cin >> update;
+    //std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    if(update != 'y' && update != 'n')
     {
         cout << "Invalid input ";
         return;
     }
-    else
+    else if(update == 'y')
     {
         string cur_name;
         cout << "Enter your name: ";
@@ -2015,12 +2118,12 @@ void Staff::edit_my_profile()
     cout << "Join Date: " << JoinDate << endl;
     cout << "Update? Enter y or n: ";
     cin_check;cin >> update;
-    if(update != 'y' || update != 'n')
+    if(update != 'y' && update != 'n')
     {
         cout << "Invalid input ";
         return;
     }
-    else
+    else if(update == 'y')
     {
         string join;
         cout << "Enter the Join Date: ";
@@ -2030,12 +2133,12 @@ void Staff::edit_my_profile()
     cout << "Phone number: " << ph_num << endl;
     cout << "Update? Enter y or n: ";
     cin_check;cin >> update;
-    if(update != 'y' || update != 'n')
+    if(update != 'y' && update != 'n')
     {
         cout << "Invalid input";
         return;
     }
-    else
+    else if(update == 'y')
     {
         long long curr_ph;
         cout << "Enter the phone number: ";
@@ -2045,32 +2148,72 @@ void Staff::edit_my_profile()
     cout << "Address: " << address << endl;
     cout << "Update? Enter y or n: ";
     cin_check;cin >> update;
-    if(update != 'y' || update != 'n')
+    if(update != 'y' && update != 'n')
     {
         cout << "Invalid input ";
         return;
     }
-    else
+    else if(update == 'y')
     {
         string cur_address;
         cout << "Enter address: ";
-        cin_check;getline(cin, cur_address);
+        cin_check;getline(cin, cur_address);cin_check;
         address = cur_address;
     }
     cout << "email id: " << emailId << endl;
     cout << "Update? Enter y or n: ";
     cin_check;cin >> update;
-    if(update != 'y' || update != 'n')
+    if(update != 'y' && update != 'n')
     {
         cout << "Invalid input ";
         return;
     }
-    else
+    else if(update == 'y')
     {
         string email_id;
         cout << "Enter email id: ";
         cin_check;cin >> email_id;
         emailId = email_id;
+    }
+    return;
+}
+
+void IssuedBy::getdetails(Library &lib)
+{
+    cout << endl << "----------------------------------" << endl;
+    if(Id[0] == 'F')
+    {
+        Faculty* faculty = lib.get_user_faculty(Id);
+        if(faculty)
+            faculty->view_my_profile();
+        if(IssueFor)
+        cout << "Issued for " << IssueFor << " days" << endl;
+    }
+    else if(Id[0] == 'N')
+    {
+        NonPhd* nphd = lib.get_user_nonphd(Id);
+        if(nphd)
+            nphd->view_my_profile();
+        if(IssueFor)
+        cout << "Issued for " << IssueFor << " days" << endl;
+    }
+    else if(Id[0] == 'P')
+    {
+        Phd* phd = lib.get_user_phd(Id);
+        if(phd)
+            phd->view_my_profile();
+        if(IssueFor)
+        cout << "Issued for " << IssueFor << " days" << endl;
+    }
+    cout << "-------------------------------" << endl;
+    return;
+}
+
+void Resource::gethistory(Library& lib)
+{
+    for(int i = 0; i < Resource::history.size(); i++)
+    {
+        history[i]->getdetails(lib);
     }
     return;
 }
@@ -2083,42 +2226,428 @@ int main()
         cout << "Authors:\n";
         cout << "Anurag Shah B16CS034\n";
         cout << "Chinmay Garg B16CS041\n";
-        cout << "@All Copyrights reserved\n";
+        cout << "\n@All Copyrights reserved\n";
         cout << "\nPress any key to continue";
         cin_check;cin.get();
         system("CLS");
         Library mylib("IITJ", 8320130726LL);
         mylib.AddMember();
     	//mylib.AddMember();
-    	string id = "NC", iid = "Sadmin";
+    	//string id = "NC", iid = "Sadmin";
     	//NonPhd* chinmay = mylib.Login_as_Non_Phd(id);
-        Staff* st = mylib.Login_as_Staff(iid);
+        //Staff* st = mylib.Login_as_Staff(iid);
         while(1)
         {
-            cout << "Instructions:\n";
-            cout << "1. ";
-            cout << "2. ";
-            cout << "3. ";
-            cout << "4. exit";
-            int u;
-            cin_check;
-            cin >> u;
-            switch(u)
+            system("CLS");
+            string Id;
+            cout << "Please login...";
+            cout << "\nEnter your Id\n";
+            cin >> Id;
+            switch(Id[0])
             {
-            case 1:
+            case 'S':
                 {
-                    break;
+                    Staff* staff = mylib.Login_as_Staff(Id);
+                    while(1)
+                    {
+                        system("CLS");
+                        cout << "WELCOME\t" << staff->getname() << endl << endl;
+                        cout << "\t\tInstructions:\n";
+                        cout << "1. View your profile" << endl;
+                        cout << "2. Edit your profile" << endl;
+                        cout << "3. Add member" << endl;
+                        cout << "4. Add Resource" << endl;
+                        cout << "5. View Resource" << endl;
+                        cout << "6. View all members" << endl;
+                        cout << "7. View all resources" << endl;
+                        cout << "8. See user history" << endl;
+                        cout << "9. See resource history" << endl;
+                        cout << "10. Issue resource" << endl;
+                        cout << "11. return resource" << endl;
+                        cout << "12. Remove member" << endl;
+                        cout << "13. Remove resource" << endl;
+                        cout << "14. Log out" << endl;
+                        int u;
+                        cin_check;
+                        cin >> u;
+                        switch(u)
+                        {
+                        case 1:
+                            {
+                                staff->view_my_profile();
+                                break;
+                            }
+                        case 2:
+                            {
+                                staff->edit_my_profile();
+                                break;
+                            }
+                        case 3:
+                            {
+                                mylib.AddMember();
+                                break;
+                            }
+                        case 4:
+                            {
+                                mylib.AddNewResource();
+                                break;
+                            }
+                        case 5:
+                            {
+                                system("CLS");
+                                cout << "1. Search by id" << endl;
+                                cout << "2. Search by Title" << endl;
+                                cout << "3. Search by Author" << endl;
+                                cout << "4. Search by Tag" << endl;
+                                int option;
+                                cout << "Select appropriately\n";
+                                cin_check;cin >> option;
+                                switch(option)
+                                {
+                                case 1:
+                                    {
+                                        cout << "Enter Id";
+                                        string Resid;
+                                        cin_check;
+                                        cin >> Resid;
+                                        Resource* res = mylib.search_by_Id(Resid);
+                                        if(!res)
+                                        {
+                                            cout << "No such resource exists\n";
+                                            break;
+                                        }
+                                        else
+                                            res->getdetails();
+                                        break;
+                                    }
+                                case 2:
+                                    {
+                                        cout << "Enter Title";
+                                        string Title;
+                                        cin_check;
+                                        cin >> Title;
+                                        Resource* res = mylib.search_by_Title(Title);
+                                        if(!res)
+                                        {
+                                            cout << "No such resource exists\n";
+                                            break;
+                                        }
+                                        else
+                                            res->getdetails();
+                                        break;
+                                    }
+                                case 3:
+                                    {
+                                        cout << "Enter author";
+                                        string author;
+                                        cin_check;
+                                        cin >> author;
+                                        Resource* res = mylib.search_by_author(author);
+                                        if(!res)
+                                        {
+                                            cout << "No such resource exists\n";
+                                            break;
+                                        }
+                                        else
+                                            res->getdetails();
+                                        break;
+                                    }
+                                case 4:
+                                    {
+                                        cout << "Enter tags. Press y when done.\n";
+                                        vector<string> tag;
+                                        cin_check;
+                                        string br = "y";
+                                        while(1)
+                                        {
+                                            string tg;
+                                            cin >> tg;
+                                            if(tg == br)
+                                                break;
+                                            tag.push_back(tg);
+                                        }
+                                        set<Resource*> res = mylib.search_by_tag(tag);
+                                        if(res.empty())
+                                        {
+                                            cout << "No such resource exists\n";
+                                            break;
+                                        }
+                                        for(set<Resource*>::iterator it = res.begin(); it != res.end(); it++)
+                                        {
+                                            (*it)->getdetails();
+                                        }
+                                        break;
+                                    }
+                                default:
+                                    {
+                                        cout << "Invalid Input\n";
+                                        break;
+                                    }
+                                }
+                                break;
+                            }
+                        case 6:
+                            {
+                                mylib.ViewAllMembers();
+                                break;
+                            }
+                        case 7:
+                            {
+                                mylib.ViewAllResource();
+                                break;
+                            }
+                        case 8:
+                            {
+                                string Userid;
+                                cout << "Enter User ID: ";
+                                while(1)
+                                {
+                                    cin_check;
+                                    cin >> Userid;
+                                    if(mylib.VerifyMemberId(Userid))
+                                        break;
+                                    cout << "Invalid Input. Try again." << endl;
+                                }
+                                if(Userid[0] == 'F')
+                                {
+                                    Faculty* faculty = mylib.get_user_faculty(Userid);
+                                    if(faculty)
+                                        faculty->getHistory();
+                                    else
+                                        cout << "No such Faculty" << endl;
+                                }
+                                else if(Userid[0] == 'N')
+                                {
+                                    NonPhd* nphd = mylib.get_user_nonphd(Userid);
+                                    if(nphd)
+                                        nphd->getHistory();
+                                    else
+                                        cout << "No such student" << endl;
+                                }
+                                else if(Userid[0] == 'P')
+                                {
+                                    Phd* phd = mylib.get_user_phd(Userid);
+                                    if(phd)
+                                        phd->getHistory();
+                                    else
+                                        cout << "No such Phd student" << endl;
+                                }
+                                break;
+                            }
+                        case 9:
+                            {
+                                string resid;
+                                cout << "Enter your resource id:" << endl;
+                                while(1)
+                                {
+                                    cin_check;
+                                    cin >>resid;
+                                    if(mylib.VerifyResource(resid))
+                                        break;
+                                    cout << "No such Resource exists. Try again." << endl;
+                                }
+                                Resource* res = mylib.search_by_Id(resid);
+                                res->gethistory(mylib);
+                                break;
+                            }
+                        case 10:
+                            {
+                                cout << "Enter resource id" << endl;
+                                string ResId;
+                                int try_ = 5;
+                                while(try_--)
+                                {
+                                    cin_check;cin >> ResId;
+                                    if(mylib.VerifyResource(ResId))
+                                       break;
+                                    cout << "Invalid Id. Try again:" << endl;
+                                }
+                                if(!try_)
+                                {
+                                    cout << "wrong input..." << endl;break;
+                                }
+                                string UserId;
+                                cout << "Input User ID: ";
+                                while(1)
+                                {
+                                    cin_check;cin >> UserId;
+                                    if(mylib.VerifyMemberId(UserId))
+                                       break;
+                                    cout << "Invalid Id. Try again:" << endl;
+                                }
+                                staff->IssueResource(UserId, ResId, mylib);
+                                break;
+                            }
+                        case 11:
+                            {
+                                cout << "Enter resource id" << endl;
+                                string ResId;
+                                int try_ = 5;
+                                while(try_--)
+                                {
+                                    cin_check;cin >> ResId;
+                                    if(mylib.VerifyResource(ResId))
+                                       break;
+                                    cout << "Invalid Id. Try again:" << endl;
+                                }
+                                if(!try_)
+                                {
+                                    cout << "Wrong input " << endl;break;
+                                }
+                                string UserId;
+                                cout << "Enter User ID: " << endl;
+                                while(1)
+                                {
+                                    cin_check;cin >> UserId;
+                                    if(mylib.VerifyMemberId(UserId))
+                                       break;
+                                    cout << "Invalid Id. Try again:" << endl;
+                                }
+                                staff->ReturnResource(UserId, ResId, mylib);
+                                break;
+                            }
+                        case 12:
+                            {
+                                string UserId;
+                                cout << "Enter User ID: ";
+                                cin >> UserId;
+                                mylib.RemoveMember(UserId);
+                                break;
+                            }
+                        case 13:
+                            {
+                                string Resid;
+                                cout << "Enter Resource ID: ";
+                                cin >> Resid;
+                                mylib.RemoveResource(Resid);
+                                break;
+                            }
+                        case 14:
+                            {
+                                goto outofthisloop;
+                            }
+                        default:
+                            {
+                                cout << "Invalid input\n";
+                                break;
+                            }
+                        }
+                        char ch;
+                        cout << "Enter to continue\n";
+                        cin_check;
+                        cin >> ch;
+                    }
                 }
-            default:
+            case 'N':
                 {
-                    break;
+                    while(1){
+                        system("CLS");
+                        cout << "1. See your history" << endl;
+                        cout << "2. View Profile" << endl;
+                        cout << "3. Edit your profile" << endl;
+                        cout << "4. Pay fine" << endl;
+                        cout << "5. Log out" << endl;
+                        int option;cin_check;
+                        cin >> option;
+                        NonPhd* nphd = mylib.Login_as_Non_Phd(Id);
+                        switch(option)
+                        {
+                        case 1:
+                            {
+                                nphd->getHistory();
+                                break;
+                            }
+                        case 2:
+                            {
+                                nphd->view_my_profile();
+                                break;
+                            }
+                        case 3:
+                            {
+                                nphd->edit_my_profile();
+                                break;
+                            }
+                        case 4:
+                            {
+                                nphd->payfine();
+                                break;
+                            }
+                        }
+                        char ch;
+                        cout << "Enter to continue\n";
+                        cin_check;
+                        cin >> ch;
+                    }
+                }
+            case 'P':
+                {
+                    while(1){
+                        system("CLS");
+                        cout << "1. See your history" << endl;
+                        cout << "2. View Profile" << endl;
+                        cout << "3. Edit your profile" << endl;
+                        cout << "4. Pay fine" << endl;
+                        cout << "5. Renew book" << endl;
+                        cout << "6. Log out" << endl;
+                        int option;cin_check;
+                        cin >> option;
+                        Phd* phd = mylib.get_user_phd(Id);
+                        switch(option)
+                        {
+                        case 1:
+                            {
+                                phd->getHistory();
+                                break;
+                            }
+                        case 2:
+                            {
+                                phd->view_my_profile();
+                                break;
+                            }
+                        case 3:
+                            {
+                                phd->edit_my_profile();
+                                break;
+                            }
+                        case 4:
+                            {
+                                phd->payfine();
+                                break;
+                            }
+                        case 5:
+                            {
+                                cout << "Input the Resource Id that you want to renew" << endl;
+                                string Resid;
+                                cin_check;
+                                cin >> Resid;
+                                phd->RenewResource(Resid);
+                                break;
+                            }
+                        case 6:
+                            {
+                                goto outofthisloop;
+                                break;
+                            }
+                        }
+                        char ch;
+                        cout << "Enter to continue\n";
+                        cin_check;
+                        cin >> ch;
+                    }
                 }
             }
+            char ch;
+            cout << "Enter to continue\n";
+            cin_check;
+            cin >> ch;
+        outofthisloop:;
+        cout << "Successfully logged out!\n";
         }
     }
     catch(...)
     {
-        cout << "Exception";
+        system("CLS");
+        cout << "Sorry there seems to be some technical error.\nDo not panic we'll fix it!\n";
     }
     return 0;
 }
