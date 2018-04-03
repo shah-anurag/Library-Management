@@ -172,10 +172,10 @@ void Resource::change_status(bool status)
 
 void Resource::update_history(string UserId, string IssueDate, bool status, int days)
 {
-    vector<IssuedBy*>::iterator it = history.begin();
-    while(it != history.end() && strcmp((*it)->getIssueDate().c_str(),UserId.c_str()) == 0)
-        it++;
-    if(it == history.end())
+    vector<IssuedBy*>::iterator it = history.end()-1;
+    while(it != history.begin()-1 && (*it)->getId() != UserId)
+        it--;
+    if(it == history.begin()-1)
     {
         IssuedBy* issuedby = new IssuedBy(UserId, IssueDate);
         history.push_back(issuedby);
@@ -185,6 +185,7 @@ void Resource::update_history(string UserId, string IssueDate, bool status, int 
     (*it)->IssuedBy::EditIssueDate(IssueDate);
     (*it)->IssuedBy::setDays(days);
     Resource::change_status(status);
+    return;
 }
 
 string IssuedBy::getId()
@@ -640,7 +641,7 @@ public:
         Author = Res->getAuthor();
         FinePaid = 0;
         Fine = 0;
-        Status = true;
+        Status = false;
         BookId = Res->getId();
         renew = false;
         while(1)
@@ -687,14 +688,14 @@ void BookIssued::setStatus(bool status)
 }
 void BookIssued::getDetails()
 {
-    cout << "Id: " << setw(10) << BookId << endl;
-    cout << "Title: " << setw(10) << BookName << endl;
-    cout << "Author: " << setw(10) << Author << endl;
-    cout << "Status: " << setw(10) << Status << endl;
-    cout << "Issue date: " << setw(10) << IssueDate << endl;
-    cout << "Return date: " << setw(10) << ReturnDate << endl;
-    cout << "Fine: " << setw(10) << Fine << endl;
-    cout << "Fine Paid: " << setw(10) << FinePaid << endl;
+    cout << "Id: " << setw(20) << BookId << endl;
+    cout << "Title: " << setw(20) << BookName << endl;
+    cout << "Author: " << setw(20) << Author << endl;
+    cout << "Status: " << setw(20) << Status << endl;
+    cout << "Issue date: " << setw(20) << IssueDate << endl;
+    cout << "Return date: " << setw(20) << ReturnDate << endl;
+    cout << "Fine: " << setw(20) << Fine << endl;
+    cout << "Fine Paid: " << setw(20) << FinePaid << endl;
     renew? cout << "Renewed\n": cout << "Non Renewed\n";
     return;
 }
@@ -736,7 +737,7 @@ long long BookIssued::CalculateFine()
     iconvert_year >> issue_year;
     cout << "ISSUE DATE" << endl;
     cout << issue_day << " " << issue_month  << " " << issue_year << endl;
-    int days_kept = 0;
+    int days_kept = 1;
     int cur_day = issue_day, cur_mon = issue_month, cur_year = issue_year;
     int d30[] = {4,6,9,11};
     while(cur_day != days || cur_mon != month || cur_year != year)
@@ -782,7 +783,7 @@ long long BookIssued::CalculateFine()
     bool isrenew = isRenew();
     int cur_fine = max((days_kept-max_days*(isrenew+1))*5,0);
     Fine = cur_fine;
-    return cur_fine;
+    return cur_fine-FinePaid;
 }
 void BookIssued::AcceptFine(long long fine)
 {
@@ -926,10 +927,11 @@ void User::payfine()
 			it--;
 			while(sum && it != history.begin()-1)
 			{
-				(*it)->AcceptFine(min(sum, (*it)->CalculateFine()));
-				sum -= min(sum, (*it)->CalculateFine());
+			    long long money = (*it)->CalculateFine();
+				(*it)->AcceptFine(min(sum, money));
+				sum -= min(sum, money);
 				(*it)->getDetails();
-				cout << " Fine = " << (*it)->CalculateFine() << "\n";
+				//cout << " Fine = " << money << " " << sum << "\n";
 				it--;
 			}
 			if(sum > 0)
@@ -947,6 +949,7 @@ void User::change_history_status(string ResId, string Date)
         if((*it)->getId() == ResId)
         {
             (*it)->setStatus(!(*it)->getStatus());
+            cout << (*it)->getStatus() << endl;
             (*it)->CalculateFine();
             /*
             (*it)->Status = 0;      											//note
@@ -1317,12 +1320,13 @@ void Phd::dec_num_of_journals()
 void Phd::view_my_profile()
 {
     cout << "\n-------------------------------------\n";
-    cout << "name: " << setw(10) << name << endl;
-    cout << "Id: " << setw(10) << Id << endl;
-    cout << "Phone number: " << setw(10) << ph_num << endl;
-    cout << "Address: " << setw(10) << address << endl;
-    cout << "Email Id: " << setw(10) << emailId << endl;
-    cout << "Department: " << setw(10) << Department << endl;
+    cout << "name: " << setw(20) << name << endl;
+    cout << "Id: " << setw(20) << Id << endl;
+    cout << "Join date: " << setw(20) << JoinDate << endl;
+    cout << "Phone number: " << setw(20) << ph_num << endl;
+    cout << "Address: " << setw(20) << address << endl;
+    cout << "Email Id: " << setw(20) << emailId << endl;
+    cout << "Department: " << setw(20) << Department << endl;
     cout << "---------------------------------------\n";
 }
 void Phd::edit_my_profile()
@@ -2082,7 +2086,7 @@ bool Staff::IssueResource(string UserId, string ResourceId, Library &lib)
                 return false;
             }
             if(resource){
-                resource->update_history(UserId, Date, false, days);
+                resource->update_history(UserId, Date, true, days);
                 if(UserId[0] == 'N')
                 {
                     NonPhd* nphd = lib.get_user_nonphd(UserId);
@@ -2153,6 +2157,7 @@ void Staff::ReturnResource(string UserId, string ResId, Library &lib)
             if(phd)
             {
                 phd->setreturndate(ResId, date);
+                resource->update_history(UserId, ResId, true, phd->getmaxdays());
                 phd->change_history_status(ResId, date);
                 if(ResId[0] == 'B')
                     phd->dec_num_of_books();
@@ -2168,6 +2173,7 @@ void Staff::ReturnResource(string UserId, string ResId, Library &lib)
             if(nphd)
                 {
                     nphd->setreturndate(ResId, date);
+                    resource->update_history(UserId, ResId, true, nphd->getmaxdays());
                     nphd->change_history_status(ResId, date);
                     nphd->dec_num_of_books();
                 }
@@ -2180,6 +2186,7 @@ void Staff::ReturnResource(string UserId, string ResId, Library &lib)
             if(faculty)
                 {
                     faculty->setreturndate(ResId, date);
+                    resource->update_history(UserId, ResId, true, faculty->getmaxdays());
                     faculty->change_history_status(ResId, date);
                     if(ResId[0] == 'B')
                         faculty->dec_num_of_books();
