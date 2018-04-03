@@ -706,6 +706,7 @@ void BookIssued::setReturnDate(string Date)
 }
 long long BookIssued::CalculateFine()
 {
+    fir:;
     int year = 0, month = 0, days = 0;
     string y,m,d;
     bool undo = 0;
@@ -722,8 +723,8 @@ long long BookIssued::CalculateFine()
     convert_days >> days;
     convert_month >> month;
     convert_year >> year;
-    //cout << "RETURN DATE\n";
-    //cout << days << " " << month << " " << year << endl;
+    cout << "RETURN DATE\n";
+    cout << days << " " << month << " " << year << endl;
     int issue_year = 0, issue_month = 0, issue_day = 0;
     string y1,m1,d1;
     for(int i = 0; i < 2; i++) d1.push_back(IssueDate[i]);
@@ -733,8 +734,8 @@ long long BookIssued::CalculateFine()
     iconvert_days >> issue_day;
     iconvert_month >> issue_month;
     iconvert_year >> issue_year;
-    //cout << "ISSUE DATE" << endl;
-    //cout << issue_day << " " << issue_month  << " " << issue_year << endl;
+    cout << "ISSUE DATE" << endl;
+    cout << issue_day << " " << issue_month  << " " << issue_year << endl;
     int days_kept = 0;
     int cur_day = issue_day, cur_mon = issue_month, cur_year = issue_year;
     int d30[] = {4,6,9,11};
@@ -743,6 +744,11 @@ long long BookIssued::CalculateFine()
         days_kept++;
         cur_day++;
         if(cur_mon == 2 && cur_day == 29)
+        {
+            cur_mon = 3;
+            cur_day = 1;
+        }
+        else if(cur_day == 30 && cur_mon == 2 && (cur_year%400==0 || (cur_year%4 == 0 && cur_year%100 != 0)))
         {
             cur_mon = 3;
             cur_day = 1;
@@ -758,15 +764,25 @@ long long BookIssued::CalculateFine()
             cur_day = 1;
             cur_mon++;
         }
+        if(days_kept == 1300)
+            break;
     }
+
     if(undo)
     {
         ReturnDate = "";
     }
+    if(days_kept == 1300)
+    {
+        cout << "Return date not valid:" << endl;
+        cout << "Input return date: ";
+        cin >> ReturnDate;
+        goto fir;
+    }
     bool isrenew = isRenew();
-    if(isrenew)
-        ChangeRenew();
-    return max(((days_kept-max_days)*((int)isrenew+1))*5,0);
+    int cur_fine = max((days_kept-max_days*(isrenew+1))*5,0);
+    Fine = cur_fine;
+    return cur_fine;
 }
 void BookIssued::AcceptFine(long long fine)
 {
@@ -1558,12 +1574,18 @@ void Library::AddMember()
             long long ph_num;
             cout << "Enter your name: ";
             cin >> name;
+            again1:;
             cout << "Enter Id: ";
             cin >> Id;
             while(Id[0] != 'N')
             {
                 cout << "First alphabet should be 'N'\nTry again.";
                 cin >> Id;
+            }
+            if(VerifyMemberId(Id))
+            {
+                cout << "Id already exists" << endl;
+                goto again1;
             }
             cout << "Enter phone number: ";
             cin_check;cin >> ph_num;
@@ -1588,12 +1610,18 @@ void Library::AddMember()
             long long ph_num;
             cout << "Enter your name: ";
             cin >> name;
+            again2:;
             cout << "Enter Id: ";
             cin >> Id;
             while(Id[0] != 'F')
             {
                 cout << "First alphabet should be 'F'\nTry again.";
                 cin >> Id;
+            }
+            if(VerifyMemberId(Id))
+            {
+                cout << "Id already exists" << endl;
+                goto again2;
             }
             cout << "Enter phone number: ";cin_check;
             cin >> ph_num;
@@ -1617,6 +1645,7 @@ void Library::AddMember()
             cout << "Enter your name: ";
             cin_check;
             cin >> name;
+            again3:;
             cout << "Enter Id: ";
             cin_check;
             cin >> Id;
@@ -1624,6 +1653,11 @@ void Library::AddMember()
             {
                 cout << "First alphabet should be 'S'\nTry again.";
                 cin >> Id;
+            }
+            if(VerifyMemberId(Id))
+            {
+                cout << "Id already exists" << endl;
+                goto again3;
             }
             cout << "Enter phone number: ";
             cin_check;
