@@ -860,6 +860,7 @@ void User::RenewResource(string ResId)
                     break;
                 }
             }
+            it++;
         }
     }
     cout << "Cannot Renew:(\n";
@@ -979,7 +980,7 @@ class Faculty: public User
     int NumOfJournalsIssued;
 public:
     Faculty(string name, string JoinDate, string Id, long long ph_num, string password, string Department, string address = "", string emailId = ""):
-        User(name, JoinDate, Id, ph_num, address, password, emailId, Department), NumOfJournalsIssued(0){}
+        User(name, JoinDate, Id, ph_num, password, Department, address, emailId), NumOfJournalsIssued(0){}
     void SuggestResource();
     static int getBookLimit()
     {
@@ -1515,6 +1516,7 @@ void Library::AddMember()
             cout << "Enter your name: ";
             cin_check;
             cin >> name;
+            again:;
             cout << "Enter Id: ";
             cin_check;
             cin >> Id;
@@ -1522,6 +1524,11 @@ void Library::AddMember()
             {
                 cout << "First alphabet should be 'P'\nTry again.";
                 cin_check;cin >> Id;
+            }
+            if(VerifyMemberId(Id))
+            {
+                cout << "Id already exists" << endl;
+                goto again;
             }
             cout << "Enter phone number: ";
             cin_check;
@@ -1704,7 +1711,7 @@ void Library::AddNewResource()
             cout << "Invalid ID: ID should start with 'J', Try again...\n";
             cin_check;cin >> Id;
         }
-        if(!Library::search_by_Id(Id));
+        if(Library::search_by_Id(Id));
         {
             cout << "This Id already exists\n";
             goto up;
@@ -2041,7 +2048,7 @@ bool Staff::IssueResource(string UserId, string ResourceId, Library &lib)
                 return false;
             }
             if(resource){
-                resource->update_history(UserId, Date, true, days);
+                resource->update_history(UserId, Date, false, days);
                 if(UserId[0] == 'N')
                 {
                     NonPhd* nphd = lib.get_user_nonphd(UserId);
@@ -2104,6 +2111,7 @@ void Staff::ReturnResource(string UserId, string ResId, Library &lib)
         string date;
         cout << "Enter today's date(dd/mm/yyyy): ";
         cin >> date;
+
         resource->change_status(true);
         if(UserId[0] == 'P')
         {
