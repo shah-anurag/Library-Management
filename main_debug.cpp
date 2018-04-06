@@ -2660,9 +2660,10 @@ int main()
                                        break;
                                     cout << "Invalid Id. Try again:" << endl;
                                 }
-                                if(!try_)
+                                if(try_ == 0)
                                 {
-                                    cout << "wrong input..." << endl;break;
+                                    cout << "wrong input..." << endl;
+                                    break;
                                 }
                                 string UserId;
                                 cout << "Input User ID: ";
