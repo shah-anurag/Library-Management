@@ -51,7 +51,7 @@ public:
     }
     bool VerifyMemberId(string Id);
     bool VerifyResource(string Id);
-    bool CheckLimit(string Id);
+    bool CheckLimit(string UserId, string ResId);
     void AddMember();
     void AddNewResource();
     void RemoveMember(string Id);
@@ -313,7 +313,7 @@ void Book::Update()
     else
     {
         string date;
-        cout << "Enter the date of purchase: ";
+        cout << "Enter the date of purchase(dd/mm/yyyy): ";
         cin_check;
         cin >> date;
         Resource::date_of_purchase = date;
@@ -369,7 +369,7 @@ void Book::Update()
         cin >> name;
         Book::name = name;
     }
-    cout << "\nUpdated!\n";
+    cout << "\nUpdated!" << endl;
     return;
 }
 void Book::AddSubject()                             //Implement
@@ -485,7 +485,7 @@ void Journal::Update()
     else
     {
         string date;
-        cout << "Enter the date of purchase: ";
+        cout << "Enter the date of purchase(dd/mm/yyyy): ";
         cin_check;cin >> date;
         Resource::date_of_purchase = date;
     }
@@ -530,8 +530,8 @@ void Journal::AddTopic(string topic)
 {
     Journal::getTopic();
     /*
-    cout << "Enter Topics you want to add:\n";
-    cout << "Enter y when you are done:)\n";
+    cout << "Enter Topics you want to add:" << endl;
+    cout << "Enter y when you are done:)" << endl;
     while(1)
     {
         string topic;
@@ -549,7 +549,7 @@ void Journal::AddTopic(string topic)
     }
     else
     {
-        cout << topic << " Already Exists\n";
+        cout << topic << " Already Exists" << endl;
     }
     return;
 }
@@ -560,7 +560,7 @@ void Journal::DeleteTopic(string topic)
     auto it = find(Journal::topic.begin(), Journal::topic.end(), topic);
     if(it == Journal::topic.end())
     {
-        cout << "Topic does not exist\n";
+        cout << "Topic does not exist" << endl;
     }
     else
     {
@@ -666,7 +666,7 @@ public:
                     break;
                 }
             }
-            cout << "Invalid input\nTry again\n";
+            cout << "Invalid input\nTry again" << endl;
         }
         ReturnDate = "";
     }
@@ -696,12 +696,12 @@ void BookIssued::getDetails()
     cout << "Return date: " << setw(20) << ReturnDate << endl;
     cout << "Fine: " << setw(20) << Fine << endl;
     cout << "Fine Paid: " << setw(20) << FinePaid << endl;
-    renew? cout << "Renewed\n": cout << "Non Renewed\n";
+    renew? cout << "Renewed" << endl: cout << "Non Renewed" << endl;
     return;
 }
 void BookIssued::setReturnDate(string Date)
 {
-    //cout << "REACHED\n";
+    //cout << "REACHED" << endl;
     ReturnDate = Date;
     Fine = CalculateFine();
 }
@@ -724,8 +724,8 @@ long long BookIssued::CalculateFine()
     convert_days >> days;
     convert_month >> month;
     convert_year >> year;
-    cout << "RETURN DATE\n";
-    cout << days << " " << month << " " << year << endl;
+    //cout << "RETURN DATE" << endl;
+    //cout << days << " " << month << " " << year << endl;
     int issue_year = 0, issue_month = 0, issue_day = 0;
     string y1,m1,d1;
     for(int i = 0; i < 2; i++) d1.push_back(IssueDate[i]);
@@ -735,8 +735,8 @@ long long BookIssued::CalculateFine()
     iconvert_days >> issue_day;
     iconvert_month >> issue_month;
     iconvert_year >> issue_year;
-    cout << "ISSUE DATE" << endl;
-    cout << issue_day << " " << issue_month  << " " << issue_year << endl;
+    //cout << "ISSUE DATE" << endl;
+    //cout << issue_day << " " << issue_month  << " " << issue_year << endl;
     int days_kept = 1;
     int cur_day = issue_day, cur_mon = issue_month, cur_year = issue_year;
     int d30[] = {4,6,9,11};
@@ -790,7 +790,7 @@ void BookIssued::AcceptFine(long long fine)
     FinePaid += min(fine, Fine);
     if(FinePaid > Fine)
     {
-        cout << "Extra amount worth Rs " << FinePaid-Fine << " paid. Please take it back!\n";
+        cout << "Extra amount worth Rs " << FinePaid-Fine << " paid. Please take it back!" << endl;
     }
     return;
 }
@@ -856,7 +856,7 @@ void User::RenewResource(string ResId)
 {
     if(getId()[0] == 'N')
     {
-        cout << "You cannot renew :'(\n";
+        cout << "You cannot renew :'(" << endl;
         return;
     }
     else
@@ -871,7 +871,7 @@ void User::RenewResource(string ResId)
                     if(!(*it)->isRenew())
                     {
                         (*it)->ChangeRenew();
-                        cout << "Renewed!\n";
+                        cout << "Renewed!" << endl;
                         return;
                     }
                     break;
@@ -880,7 +880,7 @@ void User::RenewResource(string ResId)
             it++;
         }
     }
-    cout << "Cannot Renew:(\n";
+    cout << "Cannot Renew:(" << endl;
     return;
 }
 
@@ -905,7 +905,7 @@ void User::payfine(int fine)
     }
     if(sum > 0)
     {
-        cout << "Extra money Rs. " << sum << " paid. Please take it back :)\n";
+        cout << "Extra money Rs. " << sum << " paid. Please take it back :)" << endl;
     }
     return;
 }
@@ -918,11 +918,11 @@ void User::payfine()
 			{
 				sum += (*it)->CalculateFine();
 				(*it)->getDetails();
-				//cout << " Fine = " << (*it)->CalculateFine(getId()) << "\n";
+				//cout << " Fine = " << (*it)->CalculateFine(getId()) << "" << endl;
 				it++;
 			}
 			cout << "Total fine = " << sum << endl;
-			cout << "Enter amount paid\n";
+			cout << "Enter amount paid" << endl;
 			cin_check;cin >> sum;
 			it--;
 			while(sum && it != history.begin()-1)
@@ -931,12 +931,12 @@ void User::payfine()
 				(*it)->AcceptFine(min(sum, money));
 				sum -= min(sum, money);
 				(*it)->getDetails();
-				//cout << " Fine = " << money << " " << sum << "\n";
+				//cout << " Fine = " << money << " " << sum << "" << endl;
 				it--;
 			}
 			if(sum > 0)
 			{
-				cout << "Extra money Rs. " << sum << " paid\n";
+				cout << "Extra money Rs. " << sum << " paid" << endl;
 			}
 			return;
 }
@@ -949,7 +949,7 @@ void User::change_history_status(string ResId, string Date)
         if((*it)->getId() == ResId)
         {
             (*it)->setStatus(!(*it)->getStatus());
-            cout << (*it)->getStatus() << endl;
+           // cout << (*it)->getStatus() << endl;
             (*it)->CalculateFine();
             /*
             (*it)->Status = 0;      											//note
@@ -1040,14 +1040,14 @@ void Faculty::dec_num_of_journals()
 }
 void Faculty::view_my_profile()
 {
-    cout << "\n-------------------------------------\n";
-    cout << "name: " << setw(10) << name << endl;
-    cout << "Id: " << setw(10) << Id << endl;
-    cout << "Phone number: " << setw(10) << ph_num << endl;
-    cout << "Address: " << setw(10) << address << endl;
-    cout << "Email Id: " << setw(10) << emailId << endl;
-    cout << "Department: " << setw(10) << Department << endl;
-    cout << "---------------------------------------\n";
+    cout << "\n-------------------------------------" << endl;
+    cout << "name: " << setw(30) << name << endl;
+    cout << "Id: " << setw(30) << Id << endl;
+    cout << "Phone number: " << setw(30) << ph_num << endl;
+    cout << "Address: " << setw(30) << address << endl;
+    cout << "Email Id: " << setw(30) << emailId << endl;
+    cout << "Department: " << setw(30) << Department << endl;
+    cout << "---------------------------------------" << endl;
 }
 void Faculty::edit_my_profile()
 {
@@ -1078,7 +1078,7 @@ void Faculty::edit_my_profile()
     else if(update == 'y')
     {
         string join;
-        cout << "Enter the Join Date: ";
+        cout << "Enter the Join Date(dd/mm/yyyy): ";
         cin_check;cin >> join;
         JoinDate = join;
     }
@@ -1177,15 +1177,15 @@ void NonPhd::editYear()
 }
 void NonPhd::view_my_profile()
 {
-    cout << "\n-------------------------------------\n";
-    cout << "name: " << setw(10) << name << endl;
-    cout << "Id: " << setw(10) << Id << endl;
-    cout << "Phone number: " << setw(10) << ph_num << endl;
-    cout << "Address: " << setw(10) << address << endl;
-    cout << "Email Id: " << setw(10) << emailId << endl;
-    cout << "Department: " << setw(10) << Department << endl;
+    cout << "\n-------------------------------------" << endl;
+    cout << "name: " << setw(30) << name << endl;
+    cout << "Id: " << setw(30) << Id << endl;
+    cout << "Phone number: " << setw(30) << ph_num << endl;
+    cout << "Address: " << setw(30) << address << endl;
+    cout << "Email Id: " << setw(30) << emailId << endl;
+    cout << "Department: " << setw(30) << Department << endl;
     cout << "Year: " << year << endl;                           //-_-
-    cout << "---------------------------------------\n";
+    cout << "---------------------------------------" << endl;
 }
 void NonPhd::edit_my_profile()
 {
@@ -1319,7 +1319,7 @@ void Phd::dec_num_of_journals()
 }
 void Phd::view_my_profile()
 {
-    cout << "\n-------------------------------------\n";
+    cout << "\n-------------------------------------" << endl;
     cout << "name: " << setw(20) << name << endl;
     cout << "Id: " << setw(20) << Id << endl;
     cout << "Join date: " << setw(20) << JoinDate << endl;
@@ -1327,7 +1327,7 @@ void Phd::view_my_profile()
     cout << "Address: " << setw(20) << address << endl;
     cout << "Email Id: " << setw(20) << emailId << endl;
     cout << "Department: " << setw(20) << Department << endl;
-    cout << "---------------------------------------\n";
+    cout << "---------------------------------------" << endl;
 }
 void Phd::edit_my_profile()
 {
@@ -1358,7 +1358,7 @@ void Phd::edit_my_profile()
     else if(update == 'y')
     {
         string join;
-        cout << "Enter the Join Date: ";
+        cout << "Enter the Join Date(dd/mm/yyyy): ";
         cin_check;cin >> join;
         JoinDate = join;
     }
@@ -1448,11 +1448,11 @@ bool Library::VerifyResource(string Id)
     }
     return false;
 }
-bool Library::CheckLimit(string Id)
+bool Library::CheckLimit(string UserId, string ResId)
 {
-    if(Id[0] == 'N')
+    if(UserId[0] == 'N' && ResId[0] == 'B')
     {
-        NonPhd* current = Library::get_user_nonphd(Id);
+        NonPhd* current = Library::get_user_nonphd(UserId);
         if(current)
             return Student::getBookLimit()>current->getBooksIssued();
         else
@@ -1460,50 +1460,51 @@ bool Library::CheckLimit(string Id)
             return false;
         }
     }
-    else if(Id[0] == 'P')
+    else if(UserId[0] == 'P')
     {
-        Phd* current = Library::get_user_phd(Id);
+        Phd* current = Library::get_user_phd(UserId);
         if(!current)
         {
             cout << "No such Phd student" << endl;
             return false;
         }
-        cout << "You want to check limit for\n1. Journal 2.Book\nPress 1 or 2" << endl;
-        int ch;
-        cin_check;cin >> ch;
+        //cout << "You want to check limit for\n1. Journal 2.Book\nPress 1 or 2" << endl;
+        //int ch;
+        //cin_check;cin >> ch;
         //cout << "ch = " << ch << " Student::getBookLimit() = " << Student::getBookLimit() << " current->getBooksIssued() = " << current->getBooksIssued() << endl;
-        if(ch == 1)
+
+        if(ResId[0] == 'J')
             return Phd::getMaxJournalLimit() > current->getJournalsIssued();
-        else if(ch == 2)
+        else if(ResId[0] == 'B')
             return Student::getBookLimit()>current->getBooksIssued();
         else {
-                cout << "Invalid Input\n";
+                cout << "Invalid Input" << endl;
                 return false;
         }
     }
-    else if(Id[0] == 'F')
+    else if(UserId[0] == 'F')
     {
-        Faculty* current = Library::get_user_faculty(Id);
+        Faculty* current = Library::get_user_faculty(UserId);
         if(!current)
         {
             cout << "No such faculty" << endl;
             return false;
         }
-        cout << "You want to check limit for\n1. Journal\n2.Book\nPress 1 or 2";
-        char ch;
-        cin_check;cin >> ch;
-        if(ch == '1')
+        //cout << "You want to check limit for\n1. Journal\n2.Book\nPress 1 or 2";
+        //char ch;
+        //cin_check;cin >> ch;
+        if(ResId[0] == 'J')
             return Faculty::getJournalLimit() > current->getJournalsIssued();
-        else if(ch=='2')
+        else if(ResId[0] == 'B')
             return Faculty::getBookLimit() > current->getBooksIssued();
         else{
-                cout << "Invalid Input\n";
+                cout << "Invalid Input" << endl;
                 return false;
         }
     }
     else
     {
-        cout << "Invalid Id\n";
+        cout << "Invalid Id" << endl;
     }
     return false;
 }
@@ -1519,7 +1520,7 @@ void Library::AddMember()
         first = false;
         return;
     }
-    cout << "1 Phd Student\n2 NonPhd Student\n3Faculty\n4.Staff\nSelect appropriately\n";
+    cout << "1 Phd Student\n2 NonPhd Student\n3Faculty\n4.Staff\nSelect appropriately" << endl;
     int x;
     if(cin.fail())
     {
@@ -1560,7 +1561,6 @@ void Library::AddMember()
             cout << "Enter password: ";
             cin_check;
             cin >> password;
-            cout << "You entered " << password << endl;
             cout << "Enter email id: ";
             cin_check;
             cin >> emailId;
@@ -1684,7 +1684,7 @@ void Library::AddMember()
         }
     default:
         {
-            cout << "Invalid Input\n";
+            cout << "Invalid Input" << endl;
             break;
         }
     }
@@ -1711,15 +1711,15 @@ void Library::AddNewResource()
         cin_check;cin >> Id;
         while(Id[0] != 'B')
         {
-            cout << "Invalid ID: ID should start with 'B', Try again...\n";
+            cout << "Invalid ID: ID should start with 'B', Try again..." << endl;
             cin_check;cin >> Id;
         }
         if(Library::search_by_Id(Id))
         {
-            cout << "This Id already exists\n";
+            cout << "This Id already exists" << endl;
             goto tp;
         }
-        cout << "Enter Date of Purchase: ";
+        cout << "Enter Date of Purchase(dd/mm/yyyy): ";
         cin_check;cin >> DateOfPurchase;
 
         cout << "Enter Subject Name: ";
@@ -1746,24 +1746,24 @@ void Library::AddNewResource()
         cin_check;cin >> Id;
         while(Id[0] != 'J')
         {
-            cout << "Invalid ID: ID should start with 'J', Try again...\n";
+            cout << "Invalid ID: ID should start with 'J', Try again..." << endl;
             cin_check;cin >> Id;
         }
         if(Library::search_by_Id(Id));
         {
-            cout << "This Id already exists\n";
+            cout << "This Id already exists" << endl;
             goto up;
         }
-        cout << "Enter Date of Purchase: ";
+        cout << "Enter Date of Purchase(dd/mm/yyyy): ";
         cin_check;cin >> DateOfPurchase;
-        cout << "Enter Publication date: ";
+        cout << "Enter Publication date(dd/mm/yyyy): ";
         cin_check;cin >> PubDate;
         cout << "Enter Edition: ";
         cin_check;cin >> Edition;
         cout << "Enter Rack Number: ";
         cin_check;cin >> RackNumber;
         vector<string> topic;
-        cout << "Enter the topics related to this journal\nPress ENTER while adding new topic\nPress 'y' when done\n";
+        cout << "Enter the topics related to this journal\nPress ENTER while adding new topic\nPress 'y' when done" << endl;
         int num_of_topics = 0;
         string last = "y";
         while(1)
@@ -1785,12 +1785,12 @@ void Library::RemoveMember(string Id)
         {
             delete *it;
             member.erase(it);
-            cout << "Successfully deleted!\n";
+            cout << "Successfully deleted!" << endl;
             return;
         }
         it++;
     }
-    cout << "No such member exists\n";
+    cout << "No such member exists" << endl;
     return;
 }
 void Library::RemoveResource(string Id)
@@ -1802,12 +1802,12 @@ void Library::RemoveResource(string Id)
         {
             delete *it;
             resources.erase(it);
-            cout << "Successfully deleted!\n";
+            cout << "Successfully deleted!" << endl;
             return;
         }
         it++;
     }
-    cout << "No such Book/Journal exists\n";
+    cout << "No such Book/Journal exists" << endl;
     return;
 }
 Resource* Library::search_by_author(string author)
@@ -1821,7 +1821,7 @@ Resource* Library::search_by_author(string author)
         }
         it++;
     }
-    cout << "No such Book/Journal exists\n";
+    cout << "No such Book/Journal exists" << endl;
     return nullptr;
 }
 Resource* Library::search_by_Title(string title)
@@ -1835,7 +1835,7 @@ Resource* Library::search_by_Title(string title)
         }
         it++;
     }
-    cout << "No such Book/Journal exists\n";
+    cout << "No such Book/Journal exists" << endl;
     return nullptr;
 }
 Resource* Library::search_by_Id(string ResId)           //CORRECTION
@@ -1849,7 +1849,7 @@ Resource* Library::search_by_Id(string ResId)           //CORRECTION
         }
         it++;
     }
-    cout << "No such Book/Journal exists\n";
+    cout << "No such Book/Journal exists" << endl;
     return nullptr;
 }
 set<Resource*> Library::search_by_tag(const vector<string> &tags)
@@ -1881,9 +1881,10 @@ void Library::ViewAllMembers()
     while(it != member.end())
     {
         (*it)->view_my_profile();
-        cout << "------------------\n";
+        cout << "------------------" << endl;
         it++;
     }
+    return;
 }
 void Library::ViewAllResource()
 {
@@ -1891,7 +1892,11 @@ void Library::ViewAllResource()
     {
         resources[i]->getdetails();
     }
-    cout << "------------------\n";
+    if(resources.size() == 0)
+    {
+        cout << "No books/journals are there in the library" << endl;
+    }
+    cout << "---------------------------------------------" << endl;
     return;
 }
 /*bool Library::RenewBook(string userId, string resId)
@@ -1988,7 +1993,7 @@ NonPhd* Library::Login_as_Non_Phd(string Id)
                 cin >> password;
                 while(password != (*it)->getpassword())
                 {
-                    cout << "Incorrect password. Try again...\n";
+                    cout << "Incorrect password. Try again..." << endl;
                     cin_check;cin >> password;
                 }
                 return *it;
@@ -2008,10 +2013,10 @@ Phd* Library::Login_as_Phd(string Id)
                 cout << "Enter Password: ";
                 cin_check;
                 cin >> password;
-                cout << "pss " << (*it)->getpassword() << endl;
+                //cout << "pss " << (*it)->getpassword() << endl;
                 while(password != (*it)->getpassword())
                 {
-                    cout << "Incorrect password. Try again...\n";
+                    cout << "Incorrect password. Try again..." << endl;
                     cin_check;cin >> password;
                 }
                 return *it;
@@ -2033,7 +2038,7 @@ Staff* Library::Login_as_Staff(string Id)
                 cin >> password;
                 while(password != (*it)->getpassword())
                 {
-                    cout << "Incorrect password. Try again...\n";
+                    cout << "Incorrect password. Try again..." << endl;
                     cin_check;cin >> password;
                 }
                 return *it;
@@ -2055,7 +2060,7 @@ Faculty* Library::Login_as_Faculty(string Id)
                 cin >> password;
                 while(password != (*it)->getpassword())
                 {
-                    cout << "Incorrect password. Try again...\n";
+                    cout << "Incorrect password. Try again..." << endl;
                     cin_check;cin >> password;
                 }
                 return *it;
@@ -2069,7 +2074,7 @@ bool Staff::IssueResource(string UserId, string ResourceId, Library &lib)
 {
     if(lib.VerifyMemberId(UserId) && lib.VerifyResource(ResourceId))
     {
-        if(lib.CheckLimit(UserId))
+        if(lib.CheckLimit(UserId, ResourceId))
         {
             int days = 0;
             string Date = "02/04/18";
@@ -2081,8 +2086,8 @@ bool Staff::IssueResource(string UserId, string ResourceId, Library &lib)
             resource->getdetails();
             if(resource->getStatus() == false)
             {
-                //cout << "HERE\n";
-                cout << resource->getTitle() << " Not Available\n";
+                //cout << "HERE" << endl;
+                cout << resource->getTitle() << " Not Available" << endl;
                 return false;
             }
             if(resource){
@@ -2092,7 +2097,7 @@ bool Staff::IssueResource(string UserId, string ResourceId, Library &lib)
                     NonPhd* nphd = lib.get_user_nonphd(UserId);
                     if(!nphd)
                     {
-                        cout << "No such Non phd student exists.\n";
+                        cout << "No such Non phd student exists." << endl;
                         return false;
                     }
                     nphd->updateHistory(ResourceId, lib);
@@ -2104,7 +2109,7 @@ bool Staff::IssueResource(string UserId, string ResourceId, Library &lib)
                     Phd* phd = lib.get_user_phd(UserId);
                     if(!phd)
                     {
-                        cout << "No such phd student exists\n";
+                        cout << "No such phd student exists" << endl;
                     }
                     phd->updateHistory(ResourceId, lib);
                     if(ResourceId[0] == 'B')
@@ -2117,7 +2122,7 @@ bool Staff::IssueResource(string UserId, string ResourceId, Library &lib)
                     Faculty* facl = lib.get_user_faculty(UserId);
                     if(!facl)
                     {
-                        cout << "No such faculty\n";
+                        cout << "No such faculty" << endl;
                         return false;
                     }
                     facl->updateHistory(ResourceId, lib);
@@ -2165,7 +2170,7 @@ void Staff::ReturnResource(string UserId, string ResId, Library &lib)
                     phd->dec_num_of_journals();
             }
             else
-                cout << "No such Phd student\n";
+                cout << "No such Phd student" << endl;
         }
         else if(UserId[0] == 'N')
         {
@@ -2178,7 +2183,7 @@ void Staff::ReturnResource(string UserId, string ResId, Library &lib)
                     nphd->dec_num_of_books();
                 }
             else
-                cout << "No such Non Phd student\n";
+                cout << "No such Non Phd student" << endl;
         }
         else
         {
@@ -2194,7 +2199,7 @@ void Staff::ReturnResource(string UserId, string ResId, Library &lib)
                         faculty->dec_num_of_journals();
                 }
             else
-                cout << "No such faculty\n";
+                cout << "No such faculty" << endl;
         }
     }
     return;
@@ -2222,20 +2227,20 @@ void Staff::CollectFine(string Id, long long fine, Library &lib)
     }
     else
     {
-        cout << "Invalid Id\n";
+        cout << "Invalid Id" << endl;
     }
     return;
 }
 void Staff::UpdateHistory(string UserId, string ResId, Library& lib){}
 void Staff::view_my_profile()
 {
-    cout << "\n-------------------------------------\n";
-    cout << "name: " << setw(10) << name << endl;
-    cout << "Id: " << setw(10) << Id << endl;
-    cout << "Phone number: " << setw(10) << ph_num << endl;
-    cout << "Address: " << setw(10) << address << endl;
-    cout << "Email Id: " << setw(10) << emailId << endl;
-    cout << "---------------------------------------\n";
+    cout << "\n-------------------------------------" << endl;
+    cout << "name: " << setw(30) << name << endl;
+    cout << "Id: " << setw(30) << Id << endl;
+    cout << "Phone number: " << setw(30) << ph_num << endl;
+    cout << "Address: " << setw(30) << address << endl;
+    cout << "Email Id: " << setw(30) << emailId << endl;
+    cout << "---------------------------------------" << endl;
 }
 void Staff::edit_my_profile()
 {
@@ -2269,7 +2274,7 @@ void Staff::edit_my_profile()
     else if(update == 'y')
     {
         string join;
-        cout << "Enter the Join Date: ";
+        cout << "Enter the Join Date(dd/mm/yyyy): ";
         cin_check;cin >> join;
         JoinDate = join;
     }
@@ -2380,14 +2385,15 @@ void User::updateHistory(string Resid, Library &lib)
 int main()
 {
     try{
-        cout << "\t\tWelcome to IITJ Automated Library\n";
-        cout << "\n\n";
-        cout << "Authors:\n";
-        cout << "Anurag Shah B16CS034\n";
-        cout << "Chinmay Garg B16CS041\n";
-        cout << "\n@All Copyrights reserved\n";
+        cout << "\t\tWelcome to IITJ Automated Library" << endl;
+        cout << "\n" << endl;
+        cout << "Authors:" << endl;
+        cout << "Anurag Shah B16CS034" << endl;
+        cout << "Chinmay Garg B16CS041" << endl;
+        cout << "\n@All Copyrights reserved" << endl;
         cout << "\nPress any key to continue";
         cin_check;cin.get();
+        cin.ignore(INT_MAX, '\n');
         system("CLS");
         Library mylib("IITJ", 8320130726LL);
         mylib.AddMember();
@@ -2400,7 +2406,7 @@ int main()
             system("CLS");
             string Id;
             cout << "Please login...";
-            cout << "\nEnter your Id\n";
+            cout << "\nEnter your Id" << endl;
             cin >> Id;
             switch(Id[0])
             {
@@ -2411,7 +2417,7 @@ int main()
                     {
                         system("CLS");
                         cout << "WELCOME\t" << staff->getname() << endl << endl;
-                        cout << "\t\tInstructions:\n";
+                        cout << "\t\tInstructions:" << endl;
                         cout << "1. View your profile" << endl;
                         cout << "2. Edit your profile" << endl;
                         cout << "3. Add member" << endl;
@@ -2498,7 +2504,7 @@ int main()
                                 cout << "3. Search by Author" << endl;
                                 cout << "4. Search by Tag" << endl;
                                 int option;
-                                cout << "Select appropriately\n";
+                                cout << "Select appropriately" << endl;
                                 cin_check;cin >> option;
                                 switch(option)
                                 {
@@ -2511,7 +2517,7 @@ int main()
                                         Resource* res = mylib.search_by_Id(Resid);
                                         if(!res)
                                         {
-                                            cout << "No such resource exists\n";
+                                            cout << "No such resource exists" << endl;
                                             break;
                                         }
                                         else
@@ -2527,7 +2533,7 @@ int main()
                                         Resource* res = mylib.search_by_Title(Title);
                                         if(!res)
                                         {
-                                            cout << "No such resource exists\n";
+                                            cout << "No such resource exists" << endl;
                                             break;
                                         }
                                         else
@@ -2543,7 +2549,7 @@ int main()
                                         Resource* res = mylib.search_by_author(author);
                                         if(!res)
                                         {
-                                            cout << "No such resource exists\n";
+                                            cout << "No such resource exists" << endl;
                                             break;
                                         }
                                         else
@@ -2552,7 +2558,7 @@ int main()
                                     }
                                 case 4:
                                     {
-                                        cout << "Enter tags. Press y when done.\n";
+                                        cout << "Enter tags. Press y when done." << endl;
                                         vector<string> tag;
                                         cin_check;
                                         string br = "y";
@@ -2567,7 +2573,7 @@ int main()
                                         set<Resource*> res = mylib.search_by_tag(tag);
                                         if(res.empty())
                                         {
-                                            cout << "No such resource exists\n";
+                                            cout << "No such resource exists" << endl;
                                             break;
                                         }
                                         for(set<Resource*>::iterator it = res.begin(); it != res.end(); it++)
@@ -2578,7 +2584,7 @@ int main()
                                     }
                                 default:
                                     {
-                                        cout << "Invalid Input\n";
+                                        cout << "Invalid Input" << endl;
                                         break;
                                     }
                                 }
@@ -2727,14 +2733,17 @@ int main()
                             }
                         default:
                             {
-                                cout << "Invalid input\n";
+                                cout << "Invalid input" << endl;
                                 break;
                             }
                         }
-                        char ch;
-                        cout << "Enter to continue\n";
+                        //char ch;
+                        cout << "Enter to continue" << endl;
                         cin_check;
-                        cin >> ch;
+                        cin.ignore(INT_MAX, '\n');
+                        cin.get();
+                        cin.ignore(INT_MAX, '\n');
+                        //cin >> ch;
                     }
                     break;
                 }
@@ -2774,10 +2783,11 @@ int main()
                                 break;
                             }
                         }
-                        char ch;
-                        cout << "Enter to continue\n";
+                        cout << "Enter to continue" << endl;
                         cin_check;
-                        cin >> ch;
+                        cin.ignore(INT_MAX, '\n');
+                        cin.get();
+                        cin.ignore(INT_MAX, '\n');
                     }
                     break;
                 }
@@ -2831,10 +2841,11 @@ int main()
                                 break;
                             }
                         }
-                        char ch;
-                        cout << "Enter to continue\n";
+                        cout << "Enter to continue" << endl;
                         cin_check;
-                        cin >> ch;
+                        cin.ignore(INT_MAX, '\n');
+                        cin.get();
+                        cin.ignore(INT_MAX, '\n');
                     }
                     break;
                 }
@@ -2888,10 +2899,11 @@ int main()
                                 break;
                             }
                         }
-                        char ch;
-                        cout << "Enter to continue\n";
+                        cout << "Enter to continue" << endl;
                         cin_check;
-                        cin >> ch;
+                        cin.ignore(INT_MAX, '\n');
+                        cin.get();
+                        cin.ignore(INT_MAX, '\n');
                     }
                     break;
                 }
@@ -2902,11 +2914,13 @@ int main()
                 }
             }
             char ch;
-            cout << "Enter to continue\n";
+            cout << "Enter to continue" << endl;
             cin_check;
-            cin >> ch;
-        outofthisloop:;
-        cout << "Successfully logged out!\n";
+            cin.ignore(INT_MAX, '\n');
+            cin.get();
+            cin.ignore(INT_MAX, '\n');
+            outofthisloop:;
+            cout << "Successfully logged out!" << endl;
         }
     }
     catch(...)
