@@ -179,7 +179,7 @@ void Resource::update_history(string UserId, string IssueDate, bool status, int 
     {
         IssuedBy* issuedby = new IssuedBy(UserId, IssueDate);
         history.push_back(issuedby);
-        Resource::change_status(true);
+        Resource::change_status(status);
         return;
     }
     (*it)->IssuedBy::EditIssueDate(IssueDate);
@@ -1064,7 +1064,9 @@ void Faculty::edit_my_profile()
     {
         string cur_name;
         cout << "Enter your name: ";
-        cin_check;cin >> cur_name;
+        cin_check;
+        cin.ignore(INT_MAX, '\n');
+        getline(cin, cur_name, '\n');
         name = cur_name;
     }
     cout << "Join Date: " << JoinDate << endl;
@@ -1202,7 +1204,9 @@ void NonPhd::edit_my_profile()
     {
         string cur_name;
         cout << "Enter your name: ";
-        cin_check;cin >> cur_name;
+        cin_check;
+        cin.ignore(INT_MAX, '\n');
+        getline(cin, cur_name, '\n');
         name = cur_name;
     }
     cout << "Join Date: " << JoinDate << endl;
@@ -1344,7 +1348,9 @@ void Phd::edit_my_profile()
     {
         string cur_name;
         cout << "Enter your name: ";
-        cin_check;cin >> cur_name;
+        cin_check;
+        cin.ignore(INT_MAX, '\n');
+        getline(cin, cur_name, '\n');
         name = cur_name;
     }
     cout << "Join Date: " << JoinDate << endl;
@@ -1536,7 +1542,8 @@ void Library::AddMember()
             long long ph_num;
             cout << "Enter your name: ";
             cin_check;
-            cin >> name;
+            cin.ignore(INT_MAX, '\n');
+            getline(cin, name, '\n');
             again:;
             cout << "Enter Id: ";
             cin_check;
@@ -1577,7 +1584,8 @@ void Library::AddMember()
             string name, JoinDate, Id, address = "", password, emailId = "", department;
             long long ph_num;
             cout << "Enter your name: ";
-            cin >> name;
+            cin.ignore(INT_MAX, '\n');
+            getline(cin, name, '\n');
             again1:;
             cout << "Enter Id: ";
             cin >> Id;
@@ -1613,7 +1621,8 @@ void Library::AddMember()
             string name, JoinDate, Id, address = "", password, emailId = "", department;
             long long ph_num;
             cout << "Enter your name: ";
-            cin >> name;
+            cin.ignore(INT_MAX, '\n');
+            getline(cin, name, '\n');
             again2:;
             cout << "Enter Id: ";
             cin >> Id;
@@ -1630,7 +1639,8 @@ void Library::AddMember()
             cout << "Enter phone number: ";cin_check;
             cin >> ph_num;
             cout << "Enter address: ";cin_check;cin.ignore(INT_MAX, '\n');
-            cin >> address;
+            cin.ignore(INT_MAX, '\n');
+            getline(cin, address, '\n');
             cout << "Enter password: ";cin_check;
             cin >> password;
             cout << "Enter email id: ";cin_check;
@@ -1648,7 +1658,8 @@ void Library::AddMember()
             long long ph_num;
             cout << "Enter your name: ";
             cin_check;
-            cin >> name;
+            cin.ignore(INT_MAX, '\n');
+            getline(cin, name, '\n');
             again3:;
             cout << "Enter Id: ";
             cin_check;
@@ -1669,7 +1680,7 @@ void Library::AddMember()
             cout << "Enter address: ";
             cin_check;
             cin.ignore(INT_MAX, '\n');
-            cin >> address;
+            getline(cin, address, '\n');
             cout << "Enter password: ";
             cin_check;
             cin >> password;
@@ -1778,11 +1789,73 @@ void Library::AddNewResource()
 }
 void Library::RemoveMember(string Id)
 {
+    bool del = 0;
     vector<Member*>::iterator it = member.begin();
     while(it != member.end())
     {
         if((*it)->getId() == Id)
         {
+            if(Id[0] == 'F')
+            {
+                vector<Faculty*>::iterator it_ = faculty.begin();
+                while(it_ != faculty.end())
+                {
+                    if((*it_)->getId() == Id)
+                    {
+                        del = 1;
+                        faculty.erase(it_);
+                        break;
+                    }
+                    it_++;
+                }
+            }
+            else if(Id[0] == 'N')
+            {
+                vector<NonPhd*>::iterator it_ = nphd.begin();
+                while(it_ != nphd.end())
+                {
+                    if((*it_)->getId() == Id)
+                    {
+                        del = 1;
+                        nphd.erase(it_);
+                        break;
+                    }
+                    it_++;
+                }
+            }
+            else if(Id[0] == 'P')
+            {
+                vector<Phd*>::iterator it_ = phd.begin();
+                while(it_ != phd.end())
+                {
+                    if((*it_)->getId() == Id)
+                    {
+                        del = 1;
+                        phd.erase(it_);
+                        break;
+                    }
+                    it_++;
+                }
+            }
+            else if(Id[0] == 'S')
+            {
+                vector<Staff*>::iterator it_ = staff.begin();
+                while(it_ != staff.end())
+                {
+                    if((*it_)->getId() == Id)
+                    {
+                        del = 1;
+                        staff.erase(it_);
+                        break;
+                    }
+                    it_++;
+                }
+            }
+            if(!del)
+            {
+                cout << "No such member exists!" << endl;
+                return;
+            }
             delete *it;
             member.erase(it);
             cout << "Successfully deleted!" << endl;
@@ -1891,41 +1964,16 @@ void Library::ViewAllResource()
     for(unsigned i = 0U; i < resources.size(); i++)
     {
         resources[i]->getdetails();
+        cout << "-------------------------------" << endl;
     }
     if(resources.size() == 0)
     {
         cout << "No books/journals are there in the library" << endl;
+        cout << "---------------------------------------------" << endl;
     }
-    cout << "---------------------------------------------" << endl;
     return;
 }
-/*bool Library::RenewBook(string userId, string resId)
-{
-    Resource* resource = search_by_Id(resId);
-    if(Library::VerifyMemberId(userId) == false)
-    {
-        cout << "No such User Exists" << endl;
-        return false;
-    }
-    if(!resource)
-    {
-        cout << "No such resource exists" << endl;
-    }
-    if(userId[0] == 'P')
-    {
-        if(resId[0] == 'B')
-        {
-            Phd* phd = Library::get_user_phd(userId);
-            phd->RenewResource(resId);
-        }
-        else if(resId[0] == 'J')
-        {
 
-        }
-    }
-    return false;
-}
-*/
 Phd* Library::get_user_phd(string UserId)
 {
     vector<Phd*>::iterator phd = Library::phd.begin();
@@ -2091,7 +2139,6 @@ bool Staff::IssueResource(string UserId, string ResourceId, Library &lib)
                 return false;
             }
             if(resource){
-                resource->update_history(UserId, Date, true, days);
                 if(UserId[0] == 'N')
                 {
                     NonPhd* nphd = lib.get_user_nonphd(UserId);
@@ -2100,6 +2147,7 @@ bool Staff::IssueResource(string UserId, string ResourceId, Library &lib)
                         cout << "No such Non phd student exists." << endl;
                         return false;
                     }
+                    resource->update_history(UserId, Date, false, days);
                     nphd->updateHistory(ResourceId, lib);
                     if(ResourceId[0] == 'B')
                         nphd->inc_num_of_books();
@@ -2111,6 +2159,7 @@ bool Staff::IssueResource(string UserId, string ResourceId, Library &lib)
                     {
                         cout << "No such phd student exists" << endl;
                     }
+                    resource->update_history(UserId, Date, false, days);
                     phd->updateHistory(ResourceId, lib);
                     if(ResourceId[0] == 'B')
                         phd->inc_num_of_books();
@@ -2125,6 +2174,7 @@ bool Staff::IssueResource(string UserId, string ResourceId, Library &lib)
                         cout << "No such faculty" << endl;
                         return false;
                     }
+                    resource->update_history(UserId, Date, false, days);
                     facl->updateHistory(ResourceId, lib);
                     if(ResourceId[0] == 'B')
                         facl->inc_num_of_books();
@@ -2146,6 +2196,11 @@ void Staff::ReturnResource(string UserId, string ResId, Library &lib)
     if(lib.VerifyMemberId(UserId) && lib.VerifyResource(ResId) && (UserId[0] == 'P' || UserId[0] == 'N' || UserId[0] == 'F'))
     {
         Resource* resource = lib.search_by_Id(ResId);
+        if(resource->getStatus())
+        {
+            cout << "This resource is already in library!" << endl;
+            return;
+        }
         if(resource->latest_history_user_id() != UserId)
         {
             cout << "User bearing UserId " << UserId << " does not hold this item" << endl;
@@ -2155,7 +2210,6 @@ void Staff::ReturnResource(string UserId, string ResId, Library &lib)
         cout << "Enter today's date(dd/mm/yyyy): ";
         cin >> date;
 
-        resource->change_status(true);
         if(UserId[0] == 'P')
         {
             Phd* phd = lib.get_user_phd(UserId);
@@ -2185,7 +2239,7 @@ void Staff::ReturnResource(string UserId, string ResId, Library &lib)
             else
                 cout << "No such Non Phd student" << endl;
         }
-        else
+        else if(UserId[0] == 'F')
         {
             Faculty* faculty = lib.get_user_faculty(UserId);
             if(faculty)
@@ -2260,7 +2314,9 @@ void Staff::edit_my_profile()
     {
         string cur_name;
         cout << "Enter your name: ";
-        cin_check;cin >> cur_name;
+        cin_check;
+        cin.ignore(INT_MAX, '\n');
+        getline(cin, cur_name, '\n');
         name = cur_name;
     }
     cout << "Join Date: " << JoinDate << endl;
@@ -2413,6 +2469,11 @@ int main()
             case 'S':
                 {
                     Staff* staff = mylib.Login_as_Staff(Id);
+                    if(!staff)
+                    {
+                        cout << "Invalid Id:" << endl;
+                        break;
+                    }
                     while(1)
                     {
                         system("CLS");
@@ -2493,6 +2554,14 @@ int main()
                                         phd->view_my_profile();
                                     else
                                         cout << "No such Phd student" << endl;
+                                }
+                                else if(Userid[0] == 'S')
+                                {
+                                    Staff* staff = mylib.get_user_staff(Userid);
+                                    if(staff)
+                                        staff->view_my_profile();
+                                    else
+                                        cout << "No such Staff is registered in the system" << endl;
                                 }
                                 break;
                             }
@@ -2580,6 +2649,10 @@ int main()
                                         {
                                             (*it)->getdetails();
                                         }
+                                        for(set<Resource*>::iterator it = res.begin(); it != res.end(); it++)
+                                        {
+                                            delete *it;
+                                        }
                                         break;
                                     }
                                 default:
@@ -2666,7 +2739,7 @@ int main()
                                        break;
                                     cout << "Invalid Id. Try again:" << endl;
                                 }
-                                if(try_ == 0)
+                                if(try_ == -1)
                                 {
                                     cout << "wrong input..." << endl;
                                     break;
@@ -2676,9 +2749,12 @@ int main()
                                 while(1)
                                 {
                                     cin_check;cin >> UserId;
-                                    if(mylib.VerifyMemberId(UserId))
+                                    if(mylib.VerifyMemberId(UserId) && UserId[0] != 'S')
                                        break;
-                                    cout << "Invalid Id. Try again:" << endl;
+                                    if(UserId[0] == 'S')
+                                        cout << "Staff cannot issue any resource!" << endl;
+                                    else
+                                        cout << "Invalid Id. Try again:" << endl;
                                 }
                                 staff->IssueResource(UserId, ResId, mylib);
                                 break;
@@ -2695,7 +2771,7 @@ int main()
                                        break;
                                     cout << "Invalid Id. Try again:" << endl;
                                 }
-                                if(!try_)
+                                if(try_ == -1)
                                 {
                                     cout << "Wrong input " << endl;break;
                                 }
@@ -2716,6 +2792,16 @@ int main()
                                 string UserId;
                                 cout << "Enter User ID: ";
                                 cin >> UserId;
+                                if(UserId == staff->getId())
+                                {
+                                    cout << "You cannot delete yourself" << endl;
+                                    break;
+                                }
+                                if(UserId == "Sadmin")
+                                {
+                                    cout << "You cannot delete Admin GOD" << endl;
+                                    break;
+                                }
                                 mylib.RemoveMember(UserId);
                                 break;
                             }
@@ -2750,6 +2836,11 @@ int main()
             case 'N':
                 {
                     NonPhd* nphd = mylib.Login_as_Non_Phd(Id);
+                    if(!nphd)
+                    {
+                        cout << "Invalid Id:" << endl;
+                        break;
+                    }
                     while(1){
                         system("CLS");
                         cout << "1. See your history" << endl;
@@ -2782,6 +2873,11 @@ int main()
                                 nphd->payfine();
                                 break;
                             }
+                        case 5:
+                            {
+                                goto outofthisloop;
+                                break;
+                            }
                         }
                         cout << "Enter to continue" << endl;
                         cin_check;
@@ -2794,6 +2890,11 @@ int main()
             case 'P':
                 {
                     Phd* phd = mylib.Login_as_Phd(Id);
+                    if(!phd)
+                    {
+                        cout << "Invalid Id" << endl;
+                        break;
+                    }
                     while(1){
                         system("CLS");
                         cout << "1. See your history" << endl;
