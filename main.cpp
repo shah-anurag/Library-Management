@@ -108,9 +108,14 @@ class Resource
                 status = true;
             }
 
-        Resource(string author,string title,string Id,string DateOfPurchase, int Edition, double RackNumber, bool status):
+        Resource(vector<IssuedBy*> v, string author,string title,string Id,string DateOfPurchase, int Edition, double RackNumber, bool status):
             author(author), title(title), Id(Id), date_of_purchase(DateOfPurchase), Edition(Edition), rack_num(RackNumber), status(status)
-            {}
+            {
+                for(int i = 0; i < v.size(); i++)
+                {
+                    history.push_back(v[i]);
+                }
+            }
         virtual ~Resource()
         {
             for_each(history.begin(), history.end(), delete_pointed_to<IssuedBy>);
@@ -138,6 +143,7 @@ class IssuedBy
     int IssueFor;           //MaxLimit.
 public:
     IssuedBy(string Id, string IssueDate): Id(Id), IssueDate(IssueDate){}
+    IssuedBy(string Id, string IssueDate, int IssueFor): Id(Id), IssueDate(IssueDate), IssueFor(IssueFor){}
     string getId();
     string getIssueDate();
     int getNumOfDays();
@@ -253,8 +259,8 @@ public:
     Book(string author,string title,string Id,string DateOfPurchase,int Edition,double RackNumber,string SubjectName,string SubCode):
     Resource(author, title, Id, DateOfPurchase, Edition, RackNumber), SubjectCode(SubCode), name(SubjectName){}
 
-    Book(string author,string title,string Id,string DateOfPurchase,int Edition,double RackNumber,string SubjectName,string SubCode, bool status):
-    Resource(author, title, Id, DateOfPurchase, Edition, RackNumber, status), SubjectCode(SubCode), name(SubjectName){}
+    Book(vector<IssuedBy*>&v, string author,string title,string Id,string DateOfPurchase,int Edition,double RackNumber,string SubjectName,string SubCode, bool status):
+    Resource(v, author, title, Id, DateOfPurchase, Edition, RackNumber, status), SubjectCode(SubCode), name(SubjectName){}
 
     void Update();
     void AddSubject();
@@ -436,8 +442,8 @@ public:
             }
     }
 
-    Journal(string author,string title,string Id,string DateOfPurchase,int Edition,double RackNumber,string PublicationDate, bool status, vector<string> topic):
-    Resource(author, title, Id, DateOfPurchase, Edition, RackNumber, status),PublicationDate(PublicationDate)
+    Journal(vector <IssuedBy*> v, string author,string title,string Id,string DateOfPurchase,int Edition,double RackNumber,string PublicationDate, bool status, vector<string> topic):
+    Resource(v, author, title, Id, DateOfPurchase, Edition, RackNumber, status),PublicationDate(PublicationDate)
     {
         int idx = 0;
         string last = "y";
@@ -2770,17 +2776,8 @@ void loaddata(Library &lib)
                         break;
                     }
 
-                case 11:
-                    {
-                        no_of_journal_issued = 0;
-                        for(int j = 0 ; j < data.length(); j++)
-                        {
-                            no_of_journal_issued  = no_of_journal_issued*10 + data[j] - '0';
-                        }
-                        break;
-                    }
 
-                case 12:
+                case 11:
                     {
                         while(getline(read, data))
                         {
@@ -2858,6 +2855,17 @@ void loaddata(Library &lib)
                         }
                         break;
                     }
+
+                    case 12:
+                    {
+                        no_of_journal_issued = 0;
+                        for(int j = 0 ; j < data.length(); j++)
+                        {
+                            no_of_journal_issued  = no_of_journal_issued*10 + data[j] - '0';
+                        }
+                        break;
+                    }
+
                 }
             }
         }
@@ -2937,17 +2945,8 @@ void loaddata(Library &lib)
                         break;
                     }
 
-                case 10:
-                    {
-                        year = 0;
-                        for(int j = 0 ; j < data.length(); j++)
-                        {
-                            year  = year*10 + data[j] - '0';
-                        }
-                        break;
-                    }
 
-                case 11:
+                case 10:
                     {
                         while(getline(read, data))
                         {
@@ -3025,6 +3024,17 @@ void loaddata(Library &lib)
                         }
                         break;
                     }
+
+                    case 11:
+                    {
+                        year = 0;
+                        for(int j = 0 ; j < data.length(); j++)
+                        {
+                            year  = year*10 + data[j] - '0';
+                        }
+                        break;
+                    }
+
                 }
             }
         }
@@ -3103,17 +3113,8 @@ void loaddata(Library &lib)
                         break;
                     }
 
-                case 10:
-                    {
-                        no_of_journal_issued = 0;
-                        for(int j = 0 ; j < data.length(); j++)
-                        {
-                            no_of_journal_issued  = no_of_journal_issued*10 + data[j] - '0';
-                        }
-                        break;
-                    }
 
-                case 11:
+                case 10:
                     {
                         while(getline(read, data))
                         {
@@ -3191,6 +3192,17 @@ void loaddata(Library &lib)
                         }
                         break;
                     }
+
+                    case 11:
+                    {
+                        no_of_journal_issued = 0;
+                        for(int j = 0 ; j < data.length(); j++)
+                        {
+                            no_of_journal_issued  = no_of_journal_issued*10 + data[j] - '0';
+                        }
+                        break;
+                    }
+
                 }
             }
         }
@@ -3266,6 +3278,8 @@ void loaddata(Library &lib)
     bool status;
     vector<Book*> resource_book;
     vector<Journal*> resource_journal;
+    vector<IssuedBy*> history_book;
+    vector<IssuedBy*> history_journal;
     vector<string> Topic;
     while(getline(read, data))
     {
@@ -3276,7 +3290,7 @@ void loaddata(Library &lib)
             {
                 if(data == "\\Book")
                     {
-                        resource_book.push_back(new Book(Author, Title, Id, date_of_purchase, Edition, Rack_no, sub_name, sub_code, status));
+                        resource_book.push_back(new Book(history_book, Author, Title, Id, date_of_purchase, Edition, Rack_no, sub_name, sub_code, status));
                         break;
                     }
                 ++i;
@@ -3311,12 +3325,8 @@ void loaddata(Library &lib)
                         }
                         break;
                     }
+
                 case 6:
-                    {
-                        status  = data[0] - '0';
-                        break;
-                    }
-                case 7:
                     {
                         Rack_no = 0;
                         int j = 0;
@@ -3333,16 +3343,62 @@ void loaddata(Library &lib)
                         }
                         break;
                     }
+                case 7:
+                    {
+                        status  = data[0] - '0';
+                        break;
+                    }
+
                 case 8:
+                    {
+                       while(getline(read, data))
+                        {
+                            string Res_id, iss_date;
+                            int iss_for, j = 0;
+                            while(data != "\\history")
+                            {
+                                ++j;
+                                switch(j)
+                                {
+                                case 1:
+                                    {
+                                        Res_id = data;
+                                        break;
+                                    }
+                                case 2:
+                                    {
+                                        iss_date = data;
+                                        break;
+                                    }
+                                case 3:
+                                    {
+                                        iss_for = 0;
+                                        for(int j = 0 ; j < data.length(); j++)
+                                        {
+                                            iss_for  = iss_for*10 + data[j] - '0';
+                                        }
+                                        break;
+                                    }
+
+                                    history_book.push_back(new IssuedBy(Res_id, iss_date, iss_for ));
+                                }
+                            }
+                        }
+                        break;
+
+                    }
+
+                case 9:
                     {
                         sub_code = data;
                         break;
                     }
-                case 9:
+                case 10:
                     {
                         sub_name = data;
                         break;
                     }
+
                 }
             }
         }
@@ -3354,7 +3410,7 @@ void loaddata(Library &lib)
             {
                 if(data == "\\Journal")
                     {
-                        resource_journal.push_back(new Journal(Author, Title, Id, date_of_purchase, Edition, Rack_no, publ_date, status, Topic));
+                        resource_journal.push_back(new Journal(history_journal, Author, Title, Id, date_of_purchase, Edition, Rack_no, publ_date, status, Topic));
                         break;
                     }
                 ++i;
@@ -3389,12 +3445,8 @@ void loaddata(Library &lib)
                         }
                         break;
                     }
+
                 case 6:
-                    {
-                        status  = data[0] - '0';
-                        break;
-                    }
-                case 7:
                     {
                                                 Rack_no = 0;
                         int j = 0;
@@ -3411,12 +3463,57 @@ void loaddata(Library &lib)
                         }
                         break;
                     }
+                case 7:
+                    {
+                        status  = data[0] - '0';
+                        break;
+                    }
+
                 case 8:
+                    {
+                       while(getline(read, data))
+                        {
+                            string Res_id, iss_date;
+                            int iss_for, j = 0;
+                            while(data != "\\history")
+                            {
+                                ++j;
+                                switch(j)
+                                {
+                                case 1:
+                                    {
+                                        Res_id = data;
+                                        break;
+                                    }
+                                case 2:
+                                    {
+                                        iss_date = data;
+                                        break;
+                                    }
+                                case 3:
+                                    {
+                                        iss_for = 0;
+                                        for(int j = 0 ; j < data.length(); j++)
+                                        {
+                                            iss_for  = iss_for*10 + data[j] - '0';
+                                        }
+                                        break;
+                                    }
+
+                                    history_journal.push_back(new IssuedBy(Res_id, iss_date, iss_for ));
+                                }
+                            }
+                        }
+                        break;
+
+                    }
+
+                case 9:
                     {
                         publ_date = data;
                         break;
                     }
-                case 9:
+                case 10:
                     {
                         if(data == "Topic")
                             while(getline(read,data))
