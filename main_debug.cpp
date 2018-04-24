@@ -31,6 +31,17 @@ void delete_pointed_to(T* const ptr)
     delete ptr;
 }
 
+bool valid()
+{
+    bool ans = true;
+    if(cin.fail())
+    {
+        ans = false;
+    }
+    cin_check;
+    return ans;
+}
+
 class Resource;
 class Member;
 class IssuedBy;
@@ -290,6 +301,11 @@ void Book::Update()
         cout << "Enter the name of Author: ";
         cin_check;
         cin >> author;
+        while(!valid())
+        {
+            cout << "Invalid input. Enter again..." << endl;
+            cin >> author;
+        }
         Resource::author = author;
     }
     cout << "Title: " << getTitle() << endl;
@@ -307,6 +323,11 @@ void Book::Update()
         cout << "Enter the Title: ";
         cin_check;
         cin >> title;
+        while(!valid())
+        {
+            cout << "Invalid input. Enter again..." << endl;
+            cin >> title;
+        }
         Resource::title = title;
     }
     cout << "Edition: " << GetEdition() << endl;
@@ -324,6 +345,11 @@ void Book::Update()
         cout << "Enter the Edition: ";
         cin_check;
         cin >> edition;
+        while(!valid())
+        {
+            cout << "Invalid input. Enter again..." << endl;
+            cin >> edition;
+        }
         Resource::Edition = edition;
     }
     cout << "Date of Purchase: " << getDateOfPurchase() << endl;
@@ -341,6 +367,11 @@ void Book::Update()
         cout << "Enter the date of purchase(dd/mm/yyyy): ";
         cin_check;
         cin >> date;
+        while(!valid())
+        {
+            cout << "Invalid input. Enter again..." << endl;
+            cin >> date;
+        }
         Resource::date_of_purchase = date;
     }
     cout << "Rack number: " << getRackNumber() << endl;
@@ -358,6 +389,11 @@ void Book::Update()
         cout << "Enter the rack number: ";
         cin_check;
         cin >> rack;
+        while(!valid())
+        {
+            cout << "Invalid input. Enter again..." << endl;
+            cin >> rack;
+        }
         Resource::rack_num = rack;
     }
     cout << "Subject Code: " << SubjectCode << endl;
@@ -375,6 +411,11 @@ void Book::Update()
         cout << "Enter the subject code: ";
         cin_check;
         cin >> sub_code;
+        while(!valid())
+        {
+            cout << "Invalid input. Enter again..." << endl;
+            cin >> sub_code;
+        }
         Book::SubjectCode = sub_code;
     }
     cout << "Subject Name: " << Book::name;
@@ -392,6 +433,11 @@ void Book::Update()
         cout << "Enter the name of Book: ";
         cin_check;
         cin >> name;
+        while(!valid())
+        {
+            cout << "Invalid input. Enter again..." << endl;
+            cin >> name;
+        }
         Book::name = name;
     }
     cout << "\nUpdated!" << endl;
@@ -482,6 +528,11 @@ void Journal::Update()
         string author;
         cout << "Enter the name of Author: ";
         cin >> author;
+        while(!valid())
+        {
+            cout << "Invalid input. Enter again..." << endl;
+            cin >> author;
+        }
         Resource::author = author;
     }
     cout << "Title: " << getTitle() << endl;
@@ -497,6 +548,11 @@ void Journal::Update()
         string title;
         cout << "Enter the Title: ";
         cin_check;cin >> title;
+        while(!valid())
+        {
+            cout << "Invalid input. Enter again..." << endl;
+            cin >> title;
+        }
         Resource::title = title;
     }
     cout << "Edition: " << GetEdition() << endl;
@@ -512,6 +568,11 @@ void Journal::Update()
         int edition;
         cout << "Enter the Edition: ";
         cin_check;cin >> edition;
+        while(!valid())
+        {
+            cout << "Invalid input. Enter again..." << endl;
+            cin >> edition;
+        }
         Resource::Edition = edition;
     }
     cout << "Date of Purchase: " << getDateOfPurchase() << endl;
@@ -527,6 +588,11 @@ void Journal::Update()
         string date;
         cout << "Enter the date of purchase(dd/mm/yyyy): ";
         cin_check;cin >> date;
+        while(!valid())
+        {
+            cout << "Invalid input. Enter again..." << endl;
+            cin >> date;
+        }
         Resource::date_of_purchase = date;
     }
     cout << "Rack number: " << getRackNumber() << endl;
@@ -542,6 +608,11 @@ void Journal::Update()
         double rack;
         cout << "Enter the rack number: ";
         cin_check;cin >> rack;
+        while(!valid())
+        {
+            cout << "Invalid input. Enter again..." << endl;
+            cin >> rack;
+        }
         Resource::rack_num = rack;
     }
     cout << "Publication date : " << PublicationDate << endl;
@@ -557,6 +628,11 @@ void Journal::Update()
         string pub_date;
         cout << "Enter the publication date: ";
         cin_check;cin >> pub_date;
+        while(!valid())
+        {
+            cout << "Invalid input. Enter again..." << endl;
+            cin >> pub_date;
+        }
         Journal::PublicationDate = pub_date;
     }
     return;
@@ -569,19 +645,6 @@ vector<string> Journal::getTopic()
 void Journal::AddTopic(string topic)
 {
     Journal::getTopic();
-    /*
-    cout << "Enter Topics you want to add:" << endl;
-    cout << "Enter y when you are done:)" << endl;
-    while(1)
-    {
-        string topic;
-        cout << "Enter topic: ";
-        cin_check;cin >> topic;
-        if(topic == 'y')
-            break;
-        Journal::topic.push_back(topic);
-    }
-    */
     vector<string>::iterator it = find(Journal::topic.begin(), Journal::topic.end(), topic);
     if(it == Journal::topic.end())
     {
@@ -696,6 +759,11 @@ public:
             cin_check;
             cout << "Enter today's date(dd/mm/yyyy): ";
             cin >> IssueDate;
+            while(!valid())
+            {
+                cout << "Invalid input. Enter again..." << endl;
+                cin >> IssueDate;
+            }
             if(IssueDate.size() == 10 && IssueDate[2] == '/' && IssueDate[5] == '/')
             {
                 int d30[] = {4,6,9,11};
@@ -776,6 +844,11 @@ long long BookIssued::CalculateFine()
         undo = 1;
         cout << "Enter today's date: ";
         cin_check;cin >> ReturnDate;
+        while(!valid())
+        {
+            cout << "Invalid input. Enter again..." << endl;
+            cin >> ReturnDate;
+        }
     }
     for(int i = 0; i < 2; i++) d.push_back(ReturnDate[i]);
     for(int i = 3; i < 5; i++) m.push_back(ReturnDate[i]);
@@ -838,6 +911,11 @@ long long BookIssued::CalculateFine()
         cout << "Return date not valid:" << endl;
         cout << "Input return date: ";
         cin >> ReturnDate;
+        while(!valid())
+        {
+            cout << "Invalid input. Enter again..." << endl;
+            cin >> ReturnDate;
+        }
         goto fir;
     }
     bool isrenew = isRenew();
@@ -868,7 +946,7 @@ protected:
 public:
     User(string name, string JoinDate, string Id, long long ph_num, string password, string Department, string address = "", string emailId = "")
     :Department(Department), num_of_books_issued(0), Member(name, JoinDate, Id, ph_num, password, address, emailId){}
-    User(string name, string JoinDate, string Id, long long ph_num, string password, string Department, string address = "", string emailId = "", vector<BookIssued*> &v)
+    /*User(string name, string JoinDate, string Id, long long ph_num, string password, string Department, string address = "", string emailId = "", vector<BookIssued*> &v = {})
     :Department(Department), num_of_books_issued(0), Member(name, JoinDate, Id, ph_num, password, address, emailId)
     {
         for(int i = 0; i < v.size(); i++)
@@ -876,7 +954,7 @@ public:
             history.push_back(v[i]);
         }
     }
-
+*/
     virtual ~User()
     {
         for_each(history.begin(), history.end(), delete_pointed_to<BookIssued>);
@@ -1010,6 +1088,11 @@ void User::payfine()
 			cout << "Total fine = " << sum << endl;
 			cout << "Enter amount paid" << endl;
 			cin_check;cin >> sum;
+			while(!valid())
+            {
+                cout << "Invalid input. Enter again..." << endl;
+                cin >> sum;
+            }
 			it--;
 			while(sum && it != history.begin()-1)
 			{
@@ -1176,6 +1259,11 @@ void Faculty::edit_my_profile()
         string join;
         cout << "Enter the Join Date(dd/mm/yyyy): ";
         cin_check;cin >> join;
+        while(!valid())
+        {
+            cout << "Invalid input. Enter again..." << endl;
+            cin >> join;
+        }
         JoinDate = join;
     }
     cout << "Phone number: " << ph_num << endl;
@@ -1191,6 +1279,11 @@ void Faculty::edit_my_profile()
         long long curr_ph;
         cout << "Enter the phone number: ";
         cin_check;cin >> curr_ph;
+        while(!valid())
+        {
+            cout << "Invalid input. Enter again..." << endl;
+            cin >> curr_ph;
+        }
         ph_num = curr_ph;
     }
     cout << "Address: " << address << endl;
@@ -1221,6 +1314,11 @@ void Faculty::edit_my_profile()
         string email_id;
         cout << "Enter email id: ";
         cin_check;cin >> email_id;
+        while(!valid())
+        {
+            cout << "Invalid input. Enter again..." << endl;
+            cin >> email_id;
+        }
         emailId = email_id;
     }
     cout << "Department : " << Department << endl;
@@ -1236,6 +1334,11 @@ void Faculty::edit_my_profile()
         string cur_dep;
         cout << "Enter the department: ";
         cin_check;cin >> cur_dep;
+        while(!valid())
+        {
+            cout << "Invalid input. Enter again..." << endl;
+            cin >> cur_dep;
+        }
         Department = cur_dep;
     }
     return;
@@ -1320,6 +1423,11 @@ void NonPhd::edit_my_profile()
         string join;
         cout << "Enter the Join Date: ";
         cin_check;cin >> join;
+        while(!valid())
+        {
+            cout << "Invalid input. Enter again..." << endl;
+            cin >> join;
+        }
         JoinDate = join;
     }
     cout << "Phone number: " << ph_num << endl;
@@ -1335,6 +1443,11 @@ void NonPhd::edit_my_profile()
         long long curr_ph;
         cout << "Enter the phone number: ";
         cin_check;cin >> curr_ph;
+        while(!valid())
+        {
+            cout << "Invalid input. Enter again..." << endl;
+            cin >> curr_ph;
+        }
         ph_num = curr_ph;
     }
     cout << "Address: " << address << endl;
@@ -1365,6 +1478,11 @@ void NonPhd::edit_my_profile()
         string email_id;
         cout << "Enter email id: ";
         cin_check;cin >> email_id;
+        while(!valid())
+        {
+            cout << "Invalid input. Enter again..." << endl;
+            cin >> email_id;
+        }
         emailId = email_id;
     }
     cout << "Department : " << Department << endl;
@@ -1380,6 +1498,11 @@ void NonPhd::edit_my_profile()
         string cur_dep;
         cout << "Enter the department: ";
         cin_check;cin >> cur_dep;
+        while(!valid())
+        {
+            cout << "Invalid input. Enter again..." << endl;
+            cin >> cur_dep;
+        }
         Department = cur_dep;
     }
     return;
@@ -1468,6 +1591,11 @@ void Phd::edit_my_profile()
         string join;
         cout << "Enter the Join Date(dd/mm/yyyy): ";
         cin_check;cin >> join;
+        while(!valid())
+        {
+            cout << "Invalid input. Enter again..." << endl;
+            cin >> join;
+        }
         JoinDate = join;
     }
     cout << "Phone number: " << ph_num << endl;
@@ -1483,6 +1611,11 @@ void Phd::edit_my_profile()
         long long curr_ph;
         cout << "Enter the phone number: ";
         cin_check;cin >> curr_ph;
+        while(!valid())
+        {
+            cout << "Invalid input. Enter again..." << endl;
+            cin >> curr_ph;
+        }
         ph_num = curr_ph;
     }
     cout << "Address: " << address << endl;
@@ -1513,6 +1646,11 @@ void Phd::edit_my_profile()
         string email_id;
         cout << "Enter email id: ";
         cin_check;cin >> email_id;
+        while(!valid())
+        {
+            cout << "Invalid input. Enter again..." << endl;
+            cin >> email_id;
+        }
         emailId = email_id;
     }
     cout << "Department : " << Department << endl;
@@ -1528,6 +1666,11 @@ void Phd::edit_my_profile()
         string cur_dep;
         cout << "Enter the department: ";
         cin_check;cin >> cur_dep;
+        while(!valid())
+        {
+            cout << "Invalid input. Enter again..." << endl;
+            cin >> cur_dep;
+        }
         Department = cur_dep;
     }
     return;
@@ -1627,7 +1770,7 @@ void Library::AddMember()
         first = false;
         return;
     }
-    cout << "1 Phd Student\n2 NonPhd Student\n3Faculty\n4.Staff\nSelect appropriately" << endl;
+    cout << "1 Phd Student\n2 NonPhd Student\n3 Faculty\n4 Staff\nSelect appropriately" << endl;
     int x;
     if(cin.fail())
     {
@@ -1649,6 +1792,11 @@ void Library::AddMember()
             cout << "Enter Id: ";
             cin_check;
             cin >> Id;
+            while(!valid())
+            {
+                cout << "Invalid input. Enter again..." << endl;
+                cin >> Id;
+            }
             while(Id[0] != 'P')
             {
                 cout << "First alphabet should be 'P'\nTry again.";
@@ -1662,6 +1810,11 @@ void Library::AddMember()
             cout << "Enter phone number: ";
             cin_check;
             cin >> ph_num;
+            while(!valid())
+            {
+                cout << "Invalid input. Enter again..." << endl;
+                cin >> ph_num;
+            }
             cout << "Enter address: ";
             cin_check;
             cin.ignore(INT_MAX, '\n');
@@ -1669,12 +1822,27 @@ void Library::AddMember()
             cout << "Enter password: ";
             cin_check;
             cin >> password;
+            while(!valid())
+            {
+                cout << "Invalid input. Enter again..." << endl;
+                cin >> password;
+            }
             cout << "Enter email id: ";
             cin_check;
             cin >> emailId;
+            while(!valid())
+            {
+                cout << "Invalid input. Enter again..." << endl;
+                cin >> emailId;
+            }
             cout << "Enter Department: ";
             cin_check;
             cin >> department;
+            while(!valid())
+            {
+                cout << "Invalid input. Enter again..." << endl;
+                cin >> department;
+            }
             Phd* phd = new Phd(name, JoinDate, Id, ph_num, password, department, address, emailId);
             Library::member.push_back(phd);
             Library::phd.push_back(phd);
@@ -1702,16 +1870,36 @@ void Library::AddMember()
             }
             cout << "Enter phone number: ";
             cin_check;cin >> ph_num;
+            while(!valid())
+            {
+                cout << "Invalid input. Enter again..." << endl;
+                cin >> ph_num;
+            }
             cout << "Enter address: ";
             cin_check;
             cin.ignore(INT_MAX, '\n');
             getline(cin, address, '\n');
             cout << "Enter password: ";
             cin_check;cin >> password;
+            while(!valid())
+            {
+                cout << "Invalid input. Enter again..." << endl;
+                cin >> password;
+            }
             cout << "Enter email id: ";
             cin_check;cin >> emailId;
+            while(!valid())
+            {
+                cout << "Invalid input. Enter again..." << endl;
+                cin >> emailId;
+            }
             cout << "Enter Department: ";
-            cin_check;cin >> department;cin_check;
+            cin_check;cin >> department;
+            while(!valid())
+            {
+                cout << "Invalid input. Enter again..." << endl;
+                cin >> department;
+            }
             NonPhd* nonphd = new NonPhd(name, JoinDate, Id, ph_num, password, department, 1, address, emailId);
             Library::member.push_back(nonphd);
             Library::nphd.push_back(nonphd);
@@ -1727,6 +1915,11 @@ void Library::AddMember()
             again2:;
             cout << "Enter Id: ";
             cin >> Id;
+            while(!valid())
+            {
+                cout << "Invalid input. Enter again..." << endl;
+                cin >> Id;
+            }
             while(Id[0] != 'F')
             {
                 cout << "First alphabet should be 'F'\nTry again.";
@@ -1739,15 +1932,35 @@ void Library::AddMember()
             }
             cout << "Enter phone number: ";cin_check;
             cin >> ph_num;
+            while(!valid())
+            {
+                cout << "Invalid input. Enter again..." << endl;
+                cin >> ph_num;
+            }
             cout << "Enter address: ";cin_check;
             cin.ignore(INT_MAX, '\n');
             getline(cin, address, '\n');
             cout << "Enter password: ";cin_check;
             cin >> password;
+            while(!valid())
+            {
+                cout << "Invalid input. Enter again..." << endl;
+                cin >> password;
+            }
             cout << "Enter email id: ";cin_check;
             cin >> emailId;
-            cout << "Enter Department: ";cin_check;
-            cin >> department;cin_check;
+            cout << "Enter Department: ";
+            while(!valid())
+            {
+                cout << "Invalid input. Enter again..." << endl;
+                cin >> emailId;
+            }
+            cin >> department;
+            while(!valid())
+            {
+                cout << "Invalid input. Enter again..." << endl;
+                cin >> department;
+            }
             Faculty* faculty = new Faculty(name, JoinDate, Id, ph_num, password, department, address, emailId);
             Library::member.push_back(faculty);
             Library::faculty.push_back(faculty);
@@ -1761,10 +1974,20 @@ void Library::AddMember()
             cin_check;
             cin.ignore(INT_MAX, '\n');
             getline(cin, name, '\n');
+            while(!valid())
+            {
+                cout << "Invalid input. Enter again..." << endl;
+                getline(cin, name, '\n');
+            }
             again3:;
             cout << "Enter Id: ";
             cin_check;
             cin >> Id;
+            while(!valid())
+            {
+                cout << "Invalid input. Enter again..." << endl;
+                cin >> Id;
+            }
             while(Id[0] != 'S')
             {
                 cout << "First alphabet should be 'S'\nTry again.";
@@ -1778,16 +2001,36 @@ void Library::AddMember()
             cout << "Enter phone number: ";
             cin_check;
             cin >> ph_num;
+            while(!valid())
+            {
+                cout << "Invalid input. Enter again..." << endl;
+                cin >> ph_num;
+            }
             cout << "Enter address: ";
             cin_check;
             cin.ignore(INT_MAX, '\n');
             getline(cin, address, '\n');
+            while(!valid())
+            {
+                cout << "Invalid input. Enter again..." << endl;
+                getline(cin, address);
+            }
             cout << "Enter password: ";
             cin_check;
             cin >> password;
+            while(!valid())
+            {
+                cout << "Invalid input. Enter again..." << endl;
+                cin >> password;
+            }
             cout << "Enter email id: ";
             cin_check;
             cin >> emailId;
+            while(!valid())
+            {
+                cout << "Invalid input. Enter again..." << endl;
+                cin >> emailId;
+            }
             cin_check;
             Staff* staff = new Staff(name, JoinDate, Id, ph_num, password, address, emailId);
             Library::member.push_back(staff);
@@ -1823,8 +2066,18 @@ void Library::AddNewResource()
         double RackNumber;
         cout << "Enter Author: ";
         cin_check;cin >> author;
+        while(!valid())
+        {
+            cout << "Invalid input. Enter again..." << endl;
+            cin >> author;
+        }
         cout << "Enter title: ";
         cin_check;cin >> title;
+        while(!valid())
+        {
+            cout << "Invalid input. Enter again..." << endl;
+            cin >> title;
+        }
         tp:;
         cout << "Enter Id: ";
         cin_check;cin >> Id;
@@ -1840,15 +2093,39 @@ void Library::AddNewResource()
         }
         cout << "Enter Date of Purchase(dd/mm/yyyy): ";
         cin_check;cin >> DateOfPurchase;
-
+        while(!valid())
+        {
+            cout << "Invalid input. Enter again..." << endl;
+            cin >> DateOfPurchase;
+        }
         cout << "Enter Subject Name: ";
         cin_check;cin >> SubjectName;
+        while(!valid())
+        {
+            cout << "Invalid input. Enter again..." << endl;
+            cin >> SubjectName;
+        }
         cout << "Enter Subject code: ";
         cin_check;cin >> SubCode;
+        while(!valid())
+        {
+            cout << "Invalid input. Enter again..." << endl;
+            cin >> SubCode;
+        }
         cout << "Enter Edition: ";
         cin_check;cin >> Edition;
+        while(!valid())
+        {
+            cout << "Invalid input. Enter again..." << endl;
+            cin >> Edition;
+        }
         cout << "Enter Rack Number: ";
-        cin_check;cin >> RackNumber;cin_check;
+        cin_check;cin >> RackNumber;
+        while(!valid())
+        {
+            cout << "Invalid input. Enter again..." << endl;
+            cin >> RackNumber;
+        }
         resources.push_back(new Book(author, title, Id, DateOfPurchase, Edition, RackNumber, SubjectName, SubCode));
     }
     else if(ch == '2')
@@ -1858,15 +2135,40 @@ void Library::AddNewResource()
         double RackNumber;
         cout << "Enter Author: ";
         cin_check;cin >> author;
+        while(!valid())
+        {
+            cout << "Invalid input. Enter again..." << endl;
+            cin >> author;
+        }
         cout << "Enter title: ";
         cin_check;cin >> title;
+        while(!valid())
+        {
+            cout << "Invalid input. Enter again..." << endl;
+            cin >> title;
+        }
         up:
         cout << "Enter Id: ";
         cin_check;cin >> Id;
+        while(!valid())
+        {
+            cout << "Invalid input. Enter again..." << endl;
+            cin >> Id;
+        }
+        while(!valid())
+        {
+            cout << "Invalid input. Enter again..." << endl;
+            cin >> Id;
+        }
         while(Id[0] != 'J')
         {
             cout << "Invalid ID: ID should start with 'J', Try again..." << endl;
             cin_check;cin >> Id;
+            while(!valid())
+        {
+            cout << "Invalid input. Enter again..." << endl;
+            cin >> Id;
+        }
         }
         if(Library::search_by_Id(Id))
         {
@@ -1875,12 +2177,32 @@ void Library::AddNewResource()
         }
         cout << "Enter Date of Purchase(dd/mm/yyyy): ";
         cin_check;cin >> DateOfPurchase;
+        while(!valid())
+        {
+            cout << "Invalid input. Enter again..." << endl;
+            cin >> DateOfPurchase;
+        }
         cout << "Enter Publication date(dd/mm/yyyy): ";
         cin_check;cin >> PubDate;
+        while(!valid())
+        {
+            cout << "Invalid input. Enter again..." << endl;
+            cin >> PubDate;
+        }
         cout << "Enter Edition: ";
         cin_check;cin >> Edition;
+        while(!valid())
+        {
+            cout << "Invalid input. Enter again..." << endl;
+            cin >> Edition;
+        }
         cout << "Enter Rack Number: ";
         cin_check;cin >> RackNumber;
+        while(!valid())
+        {
+            cout << "Invalid input. Enter again..." << endl;
+            cin >> RackNumber;
+        }
         vector<string> topic;
         cout << "Enter the topics related to this journal\nPress ENTER while adding new topic\nPress 'y' when done" << endl;
         string last = "y";
@@ -1888,6 +2210,11 @@ void Library::AddNewResource()
         {
             string topic_;
             cin_check;cin >> topic_;
+            while(!valid())
+            {
+                cout << "Invalid input. Enter again..." << endl;
+                cin >> topic_;
+            }
             topic.push_back(topic_);
             if(topic_ == last)
                 break;
@@ -2223,10 +2550,20 @@ Faculty* Library::Login_as_Faculty(string Id)
                 cout << "Enter Password: ";
                 cin_check;
                 cin >> password;
+                while(!valid())
+                {
+                    cout << "Invalid input. Enter again..." << endl;
+                    cin >> password;
+                }
                 while(password != (*it)->getpassword())
                 {
                     cout << "Incorrect password. Try again..." << endl;
                     cin_check;cin >> password;
+                    while(!valid())
+                    {
+                        cout << "Invalid input. Enter again..." << endl;
+                        cin >> password;
+                    }
                 }
                 return *it;
             }
@@ -2434,6 +2771,11 @@ void Staff::edit_my_profile()
         cin_check;
         cin.ignore(INT_MAX, '\n');
         getline(cin, cur_name, '\n');
+        while(!valid())
+        {
+            cout << "Invalid input. Enter again..." << endl;
+            cin >> name;
+        }
         name = cur_name;
     }
     cout << "Join Date: " << JoinDate << endl;
@@ -2449,6 +2791,11 @@ void Staff::edit_my_profile()
         string join;
         cout << "Enter the Join Date(dd/mm/yyyy): ";
         cin_check;cin >> join;
+        while(!valid())
+        {
+            cout << "Invalid input. Enter again..." << endl;
+            cin >> join;
+        }
         JoinDate = join;
     }
     cout << "Phone number: " << ph_num << endl;
@@ -2478,7 +2825,12 @@ void Staff::edit_my_profile()
     {
         string cur_address;
         cout << "Enter address: ";
-        cin_check;getline(cin, cur_address);cin_check;
+        cin_check;getline(cin, cur_address);
+        while(!valid())
+        {
+            cout << "Invalid input. Enter again..." << endl;
+            cin >> cur_address;
+        }
         address = cur_address;
     }
     cout << "email id: " << emailId << endl;
@@ -2494,6 +2846,11 @@ void Staff::edit_my_profile()
         string email_id;
         cout << "Enter email id: ";
         cin_check;cin >> email_id;
+        while(!valid())
+        {
+            cout << "Invalid input. Enter again..." << endl;
+            cin >> name;
+        }
         emailId = email_id;
     }
     return;
@@ -2669,7 +3026,7 @@ void loaddata(Library &lib)
             {
                 if(data == "\\Phd")
                     {
-                        phd.push_back(Phd());
+                       // phd.push_back(Phd());
                         break;
                     }
                 ++i;
@@ -2692,7 +3049,7 @@ void loaddata(Library &lib)
                     }
                 case 4:
                     {
-                        for(int j = 0 ; j < data.length; j++)
+                        for(int j = 0 ; j < data.length(); j++)
                         {
                             ph_num  = ph_num*10 + data[i] - '0';
                         }
@@ -2718,7 +3075,7 @@ void loaddata(Library &lib)
                         while(getline(read, data))
                         {
                             string BookId, BookName, Author, IssuedDate, ReturnDate;
-                            bool Status, renew;
+                            bool Status = 0, renew = 0;
                             long long Fine=0, FinePaid=0;
                             int max_days, j = 0;
                             while(data != "\\history")
@@ -2758,7 +3115,7 @@ void loaddata(Library &lib)
                                     }
                                 case 7:
                                     {
-                                        for(int k = 0; k < data.length; k++)
+                                        for(int k = 0; k < data.length(); k++)
                                         {
                                             Fine = Fine*10 + data[i] - '0';
                                         }
@@ -2766,7 +3123,7 @@ void loaddata(Library &lib)
                                     }
                                 case 8:
                                     {
-                                        for(int k = 0; k < data.length; k++)
+                                        for(int k = 0; k < data.length(); k++)
                                         {
                                             FinePaid = FinePaid*10 + data[i] - '0';
                                         }
@@ -2779,13 +3136,13 @@ void loaddata(Library &lib)
                                     }
                                 case 10:
                                     {
-                                        for(int k = 0; k < data.length; k++)
+                                        for(int k = 0; k < data.length(); k++)
                                         {
                                             max_days = max_days*10 + data[i] - '0';
                                         }
                                         break;
                                     }
-                                    history.push_back(new BookIssued(BookId, BookName, ));
+//                                    history.push_back(new BookIssued(BookId, BookName);
                                 }
                             }
                         }
